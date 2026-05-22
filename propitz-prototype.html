@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propitz — Fractional Ownership Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:#C9A84C;--gold-light:#E8D08A;--gold-pale:#FBF6E9;
+  --navy:#0F1E38;--navy-mid:#1B3057;--navy-light:#2A4A7A;
+  --slate:#4A5568;--slate-light:#718096;
+  --surface:#FAFAF8;--surface-2:#F3F1EC;
+  --border:rgba(15,30,56,0.10);--border-strong:rgba(15,30,56,0.18);
+  --green:#2D7D5A;--green-bg:#EAF5F0;
+  --red:#C0392B;--red-bg:#FDECEA;
+  --amber:#B7791F;--amber-bg:#FFFBEB;
+  --font-display:'DM Serif Display',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+  --shadow-sm:0 1px 3px rgba(15,30,56,0.08),0 1px 2px rgba(15,30,56,0.04);
+  --shadow-md:0 4px 16px rgba(15,30,56,0.10),0 2px 6px rgba(15,30,56,0.06);
+  --shadow-lg:0 12px 40px rgba(15,30,56,0.14),0 4px 12px rgba(15,30,56,0.08);
+  --radius:12px;--radius-sm:8px;--radius-lg:16px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:15px;}
+body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-height:100vh;overflow-x:hidden;}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* BROWSER BAR */
+.browser-bar{background:#E8E5DF;border-bottom:1px solid #D4D0C8;padding:8px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:1000;flex-shrink:0;}
+.browser-dots{display:flex;gap:5px;}
+.browser-dot{width:11px;height:11px;border-radius:50%;}
+.dot-r{background:#FF5F57;}.dot-y{background:#FFBD2E;}.dot-g{background:#28CA42;}
+.browser-url{flex:1;background:#fff;border:1px solid #C8C4BC;border-radius:6px;padding:5px 12px;font-size:12px;color:var(--slate);font-family:var(--font-body);}
+.screen-nav-label{font-size:11px;color:var(--slate-light);white-space:nowrap;}
+
+/* ROLE BAR */
+.role-bar{background:var(--gold-pale);border-bottom:1px solid rgba(201,168,76,0.3);padding:7px 24px;display:flex;align-items:center;gap:16px;font-size:12px;flex-shrink:0;}
+.role-label{color:var(--slate);font-weight:500;}
+.role-btn{padding:4px 12px;border-radius:99px;border:1px solid var(--gold-light);background:transparent;font-size:12px;cursor:pointer;font-family:var(--font-body);color:var(--slate);transition:all .15s;}
+.role-btn.active{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:600;}
+.role-btn:hover:not(.active){background:var(--gold-pale);}
+
+/* TOP NAV */
+.topnav{background:var(--navy);padding:0 32px;display:flex;align-items:center;height:60px;gap:32px;flex-shrink:0;}
+.logo{font-family:var(--font-display);font-size:22px;color:var(--gold);letter-spacing:.03em;cursor:pointer;flex-shrink:0;}
+.logo span{color:rgba(255,255,255,0.5);font-size:12px;font-family:var(--font-body);margin-left:6px;font-style:italic;}
+.nav-links{display:flex;gap:4px;flex:1;}
+.nav-link{color:rgba(255,255,255,0.6);font-size:13.5px;padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .18s;}
+.nav-link:hover{color:#fff;background:rgba(255,255,255,0.08);}
+.nav-link.active{color:#fff;background:rgba(201,168,76,0.18);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer;}
+.notif-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.7);position:relative;font-size:18px;}
+.notif-badge{position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--gold);border-radius:50%;}
+
+/* PAGE */
+.page-body{flex:1;overflow-y:auto;background:var(--surface);}
+.page-inner{max-width:1100px;margin:0 auto;padding:32px 32px 80px;}
+.page-header{margin-bottom:28px;}
+.page-header h1{font-family:var(--font-display);font-size:28px;color:var(--navy);line-height:1.2;margin-bottom:4px;}
+.page-header .subtitle{font-size:14px;color:var(--slate-light);}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.kpi-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold);}
+.kpi-label{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--slate-light);font-weight:500;margin-bottom:8px;}
+.kpi-value{font-size:26px;font-weight:600;color:var(--navy);line-height:1;margin-bottom:6px;}
+.kpi-delta{font-size:12px;}
+.up{color:var(--green);}.down{color:var(--red);}.neutral{color:var(--slate-light);}
+
+/* CARDS */
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;}
+.card-header{padding:16px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:14px;font-weight:600;color:var(--navy);}
+.card-body{padding:20px 22px;}
+.card-link{font-size:12.5px;color:var(--gold);cursor:pointer;font-weight:500;}
+.card-link:hover{text-decoration:underline;}
+
+/* TABLE */
+.data-table{width:100%;border-collapse:collapse;}
+.data-table th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--slate-light);font-weight:600;padding:10px 16px;text-align:left;background:var(--surface-2);border-bottom:1px solid var(--border);}
+.data-table td{padding:13px 16px;font-size:13.5px;border-bottom:1px solid var(--border);color:var(--navy);vertical-align:middle;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:var(--surface-2);cursor:pointer;}
+.num{font-weight:500;}.num-pos{color:var(--green);font-weight:500;}.num-neg{color:var(--red);font-weight:500;}.muted{color:var(--slate-light);}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:99px;}
+.badge-green{background:var(--green-bg);color:var(--green);}
+.badge-red{background:var(--red-bg);color:var(--red);}
+.badge-amber{background:var(--amber-bg);color:var(--amber);}
+.badge-navy{background:rgba(15,30,56,0.08);color:var(--navy-mid);}
+.badge-gold{background:var(--gold-pale);color:#8A6A1A;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-body);font-size:13.5px;font-weight:500;padding:9px 20px;border-radius:var(--radius-sm);border:none;cursor:pointer;transition:all .18s;}
+.btn-primary{background:var(--navy);color:#fff;}.btn-primary:hover{background:var(--navy-mid);}
+.btn-gold{background:var(--gold);color:var(--navy);}.btn-gold:hover{background:var(--gold-light);}
+.btn-outline{background:transparent;color:var(--navy);border:1px solid var(--border-strong);}.btn-outline:hover{background:var(--surface-2);}
+.btn-sm{font-size:12px;padding:6px 14px;}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1px solid rgba(192,57,43,0.2);}
+.btn-success{background:var(--green-bg);color:var(--green);border:1px solid rgba(45,125,90,0.2);}
+
+/* LAYOUT */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.two-col-70{display:grid;grid-template-columns:2fr 1fr;gap:18px;}
+
+/* CHARTS */
+.chart-area{height:180px;display:flex;align-items:flex-end;gap:6px;padding:0 4px;}
+.chart-bar{flex:1;border-radius:4px 4px 0 0;background:var(--gold-pale);border:1.5px solid var(--gold-light);transition:all .2s;cursor:pointer;}
+.chart-bar:hover{background:var(--gold-light);}
+.chart-bar.active{background:var(--gold);border-color:var(--gold);}
+.donut-wrap{display:flex;align-items:center;gap:20px;}
+.donut-legend{flex:1;display:flex;flex-direction:column;gap:8px;}
+.legend-row{display:flex;align-items:center;gap:8px;font-size:12.5px;}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* PROPERTY CARDS */
+.property-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.prop-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;cursor:pointer;transition:all .2s;}
+.prop-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.prop-img{height:130px;display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;overflow:hidden;}
+.prop-img-overlay{position:absolute;bottom:0;left:0;right:0;padding:6px 12px;background:linear-gradient(transparent,rgba(15,30,56,0.8));font-size:11px;color:rgba(255,255,255,0.85);font-weight:500;}
+.prop-body{padding:14px 16px;}
+.prop-name{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:2px;}
+.prop-location{font-size:12px;color:var(--slate-light);margin-bottom:10px;}
+.prop-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;}
+.prop-stat-item{background:var(--surface-2);border-radius:6px;padding:6px 10px;}
+.prop-stat-label{font-size:10px;color:var(--slate-light);text-transform:uppercase;letter-spacing:.06em;}
+.prop-stat-val{font-size:13px;font-weight:600;color:var(--navy);}
+.units-bar{height:4px;background:var(--surface-2);border-radius:2px;margin:4px 0;}
+.units-fill{height:4px;border-radius:2px;background:var(--gold);}
+
+/* FORMS */
+.form-group{margin-bottom:18px;}
+.form-label{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.05em;}
+.form-input{width:100%;padding:10px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:14px;color:var(--navy);background:#fff;transition:border-color .2s;outline:none;}
+.form-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.12);}
+.form-hint{font-size:11.5px;color:var(--slate-light);margin-top:4px;}
+.form-select{width:100%;padding:10px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:14px;color:var(--navy);background:#fff;appearance:none;outline:none;}
+
+/* STEPPER */
+.stepper{display:flex;align-items:center;gap:0;margin-bottom:32px;}
+.step{display:flex;align-items:center;gap:10px;}
+.step-num{width:30px;height:30px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--slate-light);flex-shrink:0;}
+.step.done .step-num{background:var(--green-bg);border-color:var(--green);color:var(--green);}
+.step.current .step-num{background:var(--navy);border-color:var(--navy);color:#fff;}
+.step-label{font-size:12.5px;font-weight:500;color:var(--slate-light);}
+.step.done .step-label,.step.current .step-label{color:var(--navy);}
+.step-connector{flex:1;height:1.5px;background:var(--border-strong);min-width:24px;}
+.step-connector.done{background:var(--green);}
+
+/* SUBSCRIBE WIDGET */
+.sub-widget{background:var(--navy);border-radius:var(--radius);padding:24px;color:#fff;}
+.sub-widget h3{font-size:16px;font-weight:600;margin-bottom:16px;color:var(--gold);}
+.sub-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13.5px;}
+.sub-row.total{font-size:16px;font-weight:600;border-top:1px solid rgba(255,255,255,0.15);padding-top:12px;margin-top:4px;}
+.sub-input{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border-radius:8px;padding:8px 12px;margin-bottom:16px;}
+.sub-input input{background:none;border:none;color:#fff;font-size:20px;font-weight:600;width:60px;outline:none;font-family:var(--font-body);}
+.sub-input span{font-size:12px;color:rgba(255,255,255,0.55);}
+.sub-btn{width:100%;padding:13px;background:var(--gold);color:var(--navy);font-weight:600;font-size:14.5px;border:none;border-radius:8px;cursor:pointer;font-family:var(--font-body);margin-top:12px;transition:background .18s;}
+.sub-btn:hover{background:var(--gold-light);}
+
+/* ADMIN SIDEBAR */
+.admin-layout{display:flex;flex:1;overflow:hidden;}
+.sidebar{width:220px;flex-shrink:0;background:var(--navy);padding:20px 0;display:flex;flex-direction:column;gap:2px;}
+.sidebar-section{padding:12px 16px 4px;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,0.3);font-weight:600;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,0.6);cursor:pointer;font-size:13.5px;transition:all .15s;border-left:3px solid transparent;}
+.sidebar-item:hover{color:#fff;background:rgba(255,255,255,0.06);}
+.sidebar-item.active{color:#fff;background:rgba(201,168,76,0.12);border-left-color:var(--gold);}
+.sidebar-icon{font-size:17px;width:20px;text-align:center;}
+.admin-content{flex:1;overflow-y:auto;background:var(--surface);}
+
+/* MODAL */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(15,30,56,0.55);z-index:500;align-items:center;justify-content:center;}
+.modal-backdrop.open{display:flex;}
+.modal{background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:520px;max-width:94vw;max-height:90vh;overflow-y:auto;}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-title{font-family:var(--font-display);font-size:20px;color:var(--navy);}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--slate-light);line-height:1;}
+.modal-body{padding:22px 24px;}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+
+/* LOGIN */
+.login-wrap{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;}
+.login-left{padding:48px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);}
+.login-brand{font-family:var(--font-display);font-size:32px;color:var(--gold);}
+.login-brand small{display:block;font-family:var(--font-body);font-size:13px;color:rgba(255,255,255,0.45);margin-top:4px;font-style:italic;}
+.login-tagline{font-family:var(--font-display);font-size:42px;color:#fff;line-height:1.2;margin-bottom:16px;}
+.login-tagline em{color:var(--gold);font-style:italic;}
+.login-features{list-style:none;}
+.login-features li{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.65);font-size:14px;padding:6px 0;}
+.login-features li::before{content:'✦';color:var(--gold);font-size:10px;}
+.login-right{background:#fff;display:flex;align-items:center;justify-content:center;padding:48px;}
+.login-form-box{width:100%;max-width:380px;}
+.login-form-title{font-family:var(--font-display);font-size:26px;color:var(--navy);margin-bottom:6px;}
+.login-form-sub{font-size:14px;color:var(--slate-light);margin-bottom:28px;}
+.login-tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid var(--border);}
+.login-tab{flex:1;text-align:center;padding:9px;font-size:13.5px;cursor:pointer;color:var(--slate-light);border-bottom:2px solid transparent;transition:all .18s;font-weight:500;}
+.login-tab.active{color:var(--navy);border-bottom-color:var(--gold);}
+
+/* NOTIFICATIONS */
+.notif-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.notif-item:last-child{border-bottom:none;}
+.notif-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.notif-body{flex:1;}
+.notif-title{font-size:13px;font-weight:500;margin-bottom:2px;}
+.notif-time{font-size:11.5px;color:var(--slate-light);}
+.notif-unread{width:7px;height:7px;border-radius:50%;background:var(--gold);margin-top:6px;flex-shrink:0;}
+
+/* MISC */
+.progress-wrap{background:var(--surface-2);border-radius:4px;height:6px;margin-top:4px;}
+.progress-fill{height:6px;border-radius:4px;background:var(--gold);}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:14px 20px;border-radius:var(--radius);font-size:13.5px;font-weight:500;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-thumb{background:rgba(15,30,56,0.15);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- ═══ SCREEN: LOGIN ═══ -->
+<div id="s-login" class="screen active">
+  <div class="login-wrap">
+    <div class="login-left">
+      <div class="login-brand">Propitz<small>Fractional Ownership Platform</small></div>
+      <div>
+        <div class="login-tagline">Own a piece of <em>prime</em> real estate</div>
+        <p style="color:rgba(255,255,255,0.55);font-size:14px;line-height:1.7;margin-bottom:24px;">India's most transparent fractional real estate investment platform. Start from ₹10 lakhs.</p>
+        <ul class="login-features">
+          <li>SEBI-compliant fractional ownership</li>
+          <li>Real-time NAV tracking & P&L dashboard</li>
+          <li>Quarterly distributions & exit liquidity</li>
+          <li>KYC-verified, legally-structured investments</li>
+          <li>Curated Grade-A commercial & residential properties</li>
+        </ul>
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.25);">© 2026 Propitz Technology Pvt Ltd · SEBI Registered · All investments subject to market risk</div>
+    </div>
+    <div class="login-right">
+      <div class="login-form-box">
+        <div class="login-form-title">Welcome back</div>
+        <div class="login-form-sub">Sign in to your investor account</div>
+        <div class="login-tabs">
+          <div class="login-tab active" onclick="setLoginTab(this,'investor')">Investor</div>
+          <div class="login-tab" onclick="setLoginTab(this,'admin')">Admin</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input class="form-input" type="email" id="login-email" value="rahul.mehta@gmail.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" type="password" value="••••••••">
+          <div class="form-hint" style="text-align:right;margin-top:6px;"><span style="color:var(--gold);cursor:pointer;font-size:12px;">Forgot password?</span></div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;" onclick="doLogin()" id="login-btn">Sign in →</button>
+        <div style="margin-top:20px;text-align:center;font-size:13px;color:var(--slate-light);">New investor? <span style="color:var(--gold);cursor:pointer;font-weight:500;" onclick="go('s-kyc')">Create account</span></div>
+        <div style="margin-top:28px;padding:14px;background:var(--gold-pale);border-radius:var(--radius-sm);border:1px solid rgba(201,168,76,0.3);">
+          <div style="font-size:11px;font-weight:600;color:var(--amber);margin-bottom:6px;">🎭 PROTOTYPE DEMO</div>
+          <div style="font-size:12px;color:var(--slate);line-height:1.6;">Click <strong>Sign in</strong> for Investor view · Switch tab to <strong>Admin</strong> for back-office · Use the role bar to jump between screens.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN: INVESTOR DASHBOARD ═══ -->
+<div id="s-dashboard" class="screen">
+  <div class="browser-bar"><div class="browser-dots"><div class="browser-dot dot-r"></div><div class="browser-dot dot-y"></div><div class="browser-dot dot-g"></div></div><div class="browser-url">🔒 portal.propitz.com/dashboard</div><div class="screen-nav-label">Investor · Dashboard</div></div>
+  <div class="role-bar"><span class="role-label">View as:</span><button class="role-btn active" onclick="sw('investor',this)">👤 Investor</button><button class="role-btn" onclick="sw('admin',this)">🛡 Admin</button><span style="margin-left:auto;color:var(--slate-light);font-size:12px;">Rahul Mehta</span><button class="btn btn-sm btn-outline" style="font-size:11px;padding:3px 10px;" onclick="go('s-login')">Logout</button></div>
+  <div class="topnav">
+    <div class="logo" onclick="go('s-dashboard')">Propitz<span>Investor Portal</span></div>
+    <div class="nav-links">
+      <div class="nav-link active" onclick="go('s-dashboard')">Dashboard</div>
+      <div class="nav-link" onclick="go('s-properties')">Properties</div>
+      <div class="nav-link" onclick="go('s-transactions')">Transactions</div>
+      <div class="nav-link" onclick="go('s-documents')">Documents</div>
+    </div>
+    <div class="nav-right">
+      <button class="notif-btn" onclick="openModal('m-notif')">🔔<div class="notif-badge"></div></button>
+      <div class="nav-avatar" onclick="openModal('m-profile')">RM</div>
+    </div>
+  </div>
+  <div class="page-body"><div class="page-inner">
+    <div class="page-header"><h1>Good morning, Rahul ✦</h1><div class="subtitle">Portfolio as of 22 May 2026 · <span style="color:var(--green);font-weight:500;">KYC Approved</span></div></div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Total Portfolio Value</div><div class="kpi-value">₹58.4L</div><div class="kpi-delta up">↑ ₹3.2L this quarter</div></div>
+      <div class="kpi-card"><div class="kpi-label">Total Invested</div><div class="kpi-value">₹50.0L</div><div class="kpi-delta neutral">Across 3 properties</div></div>
+      <div class="kpi-card"><div class="kpi-label">Unrealised P&L</div><div class="kpi-value" style="color:var(--green);">+₹8.4L</div><div class="kpi-delta up">+16.8% overall return</div></div>
+      <div class="kpi-card"><div class="kpi-label">Distributions YTD</div><div class="kpi-value">₹2.1L</div><div class="kpi-delta up">8.4% annualised yield</div></div>
+    </div>
+    <div class="two-col-70" style="margin-bottom:18px;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">My Portfolio</span><span class="card-link" onclick="go('s-properties')">Browse more →</span></div>
+        <table class="data-table">
+          <thead><tr><th>Property</th><th>Units</th><th>Acq. Price</th><th>Curr. Value</th><th>P&L</th></tr></thead>
+          <tbody>
+            <tr onclick="go('s-prop-detail')"><td><div style="font-weight:500;">Prestige Koramangala</div><div class="muted" style="font-size:11.5px;">Bengaluru · Commercial</div></td><td class="num">120</td><td class="muted">₹2,000</td><td class="num">₹2,74,800</td><td class="num-pos">+₹26,400 <span style="font-size:11px;">(+10.6%)</span></td></tr>
+            <tr onclick="go('s-prop-detail')"><td><div style="font-weight:500;">Lodha Primero BKC</div><div class="muted" style="font-size:11.5px;">Mumbai · Residential</div></td><td class="num">200</td><td class="muted">₹3,500</td><td class="num">₹7,90,000</td><td class="num-pos">+₹90,000 <span style="font-size:11px;">(+12.9%)</span></td></tr>
+            <tr onclick="go('s-prop-detail')"><td><div style="font-weight:500;">DLF CyberHub Phase 3</div><div class="muted" style="font-size:11.5px;">Gurugram · Commercial</div></td><td class="num">80</td><td class="muted">₹4,200</td><td class="num">₹3,76,000</td><td class="num-pos">+₹40,000 <span style="font-size:11px;">(+11.9%)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:18px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Allocation</span></div>
+          <div class="card-body">
+            <div class="donut-wrap">
+              <svg width="90" height="90" viewBox="0 0 90 90">
+                <circle cx="45" cy="45" r="35" fill="none" stroke="#F3F1EC" stroke-width="14"/>
+                <circle cx="45" cy="45" r="35" fill="none" stroke="#C9A84C" stroke-width="14" stroke-dasharray="88 132" stroke-dashoffset="0" transform="rotate(-90 45 45)"/>
+                <circle cx="45" cy="45" r="35" fill="none" stroke="#2D7D5A" stroke-width="14" stroke-dasharray="66 154" stroke-dashoffset="-88" transform="rotate(-90 45 45)"/>
+                <circle cx="45" cy="45" r="35" fill="none" stroke="#1B3057" stroke-width="14" stroke-dasharray="66 154" stroke-dashoffset="-154" transform="rotate(-90 45 45)"/>
+                <text x="45" y="43" text-anchor="middle" font-size="11" font-weight="600" fill="#0F1E38">3</text>
+                <text x="45" y="54" text-anchor="middle" font-size="8" fill="#718096">props</text>
+              </svg>
+              <div class="donut-legend">
+                <div class="legend-row"><div class="legend-dot" style="background:#C9A84C;"></div><span>Koramangala <strong>41%</strong></span></div>
+                <div class="legend-row"><div class="legend-dot" style="background:#2D7D5A;"></div><span>Lodha BKC <strong>31%</strong></span></div>
+                <div class="legend-row"><div class="legend-dot" style="background:#1B3057;"></div><span>DLF CH3 <strong>28%</strong></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Notifications</span><span class="card-link" onclick="openModal('m-notif')">All →</span></div>
+          <div class="card-body" style="padding-top:10px;">
+            <div class="notif-item"><div class="notif-icon" style="background:var(--green-bg);">📈</div><div class="notif-body"><div class="notif-title">Valuation updated: Koramangala</div><div class="notif-time">2 hours ago</div></div><div class="notif-unread"></div></div>
+            <div class="notif-item" style="border-bottom:none;"><div class="notif-icon" style="background:var(--gold-pale);">💰</div><div class="notif-body"><div class="notif-title">Distribution of ₹18,400 processed</div><div class="notif-time">3 days ago</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Recent Transactions</span><span class="card-link" onclick="go('s-transactions')">View all →</span></div>
+      <table class="data-table">
+        <thead><tr><th>Date</th><th>Type</th><th>Property</th><th>Units</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="muted">20 May 2026</td><td><span class="badge badge-green">💰 Distribution</span></td><td>Lodha BKC</td><td class="muted">—</td><td class="num-pos">+₹18,400</td><td><span class="badge badge-green">Completed</span></td></tr>
+          <tr><td class="muted">02 May 2026</td><td><span class="badge badge-navy">📦 Investment</span></td><td>DLF CH3</td><td class="num">80</td><td class="num">₹3,36,000</td><td><span class="badge badge-green">Completed</span></td></tr>
+          <tr><td class="muted">14 Apr 2026</td><td><span class="badge badge-navy">📦 Investment</span></td><td>Koramangala</td><td class="num">120</td><td class="num">₹2,40,000</td><td><span class="badge badge-green">Completed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+</div>
+
+<!-- ═══ SCREEN: PROPERTIES ═══ -->
+<div id="s-properties" class="screen">
+  <div class="browser-bar"><div class="browser-dots"><div class="browser-dot dot-r"></div><div class="browser-dot dot-y"></div><div class="browser-dot dot-g"></div></div><div class="browser-url">🔒 portal.propitz.com/properties</div><div class="screen-nav-label">Investor · Browse Properties</div></div>
+  <div class="role-bar"><span class="role-label">View as:</span><button class="role-btn active" onclick="sw('investor',this)">👤 Investor</button><button class="role-btn" onclick="sw('admin',this)">🛡 Admin</button><span style="margin-left:auto;color:var(--slate-light);font-size:12px;">Rahul Mehta</span></div>
+  <div class="topnav">
+    <div class="logo" onclick="go('s-dashboard')">Propitz<span>Investor Portal</span></div>
+    <div class="nav-links">
+      <div class="nav-link" onclick="go('s-dashboard')">Dashboard</div>
+      <div class="nav-link active" onclick="go('s-properties')">Properties</div>
+      <div class="nav-link" onclick="go('s-transactions')">Transactions</div>
+      <div class="nav-link" onclick="go('s-documents')">Documents</div>
+    </div>
+    <div class="nav-right"><button class="notif-btn" onclick="openModal('m-notif')">🔔<div class="notif-badge"></div></button><div class="nav-avatar">RM</div></div>
+  </div>
+  <div class="page-body"><div class="page-inner">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+      <div><h1>Browse Properties</h1><div class="subtitle">3 opportunities · KYC-verified access</div></div>
+      <div style="display:flex;gap:10px;">
+        <select class="form-select" style="width:auto;padding:8px 14px;font-size:13px;"><option>All asset types</option><option>Commercial</option><option>Residential</option></select>
+        <select class="form-select" style="width:auto;padding:8px 14px;font-size:13px;"><option>Sort: Yield ↓</option><option>Sort: Unit Price</option></select>
+      </div>
+    </div>
+    <div class="property-grid">
+      <div class="prop-card" onclick="go('s-prop-detail')">
+        <div class="prop-img" style="background:linear-gradient(135deg,#1B3057,#2A4A7A);">🏢<div class="prop-img-overlay">Commercial · Bengaluru</div></div>
+        <div class="prop-body">
+          <div class="prop-name">Prestige Koramangala</div>
+          <div class="prop-location">📍 Koramangala, Bengaluru</div>
+          <div class="prop-stats">
+            <div class="prop-stat-item"><div class="prop-stat-label">Unit Price</div><div class="prop-stat-val">₹2,287</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Min. Invest.</div><div class="prop-stat-val">10 units</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Yield</div><div class="prop-stat-val" style="color:var(--green);">9.2% p.a.</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Total Value</div><div class="prop-stat-val">₹12.8Cr</div></div>
+          </div>
+          <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;"><span class="muted">Available</span><span style="font-weight:500;">880/1000 units</span></div><div class="units-bar"><div class="units-fill" style="width:88%;"></div></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;"><span class="badge badge-gold">⚡ Filling fast</span><button class="btn btn-sm btn-gold" onclick="event.stopPropagation();go('s-prop-detail')">Subscribe →</button></div>
+        </div>
+      </div>
+      <div class="prop-card" onclick="go('s-prop-detail')">
+        <div class="prop-img" style="background:linear-gradient(135deg,#2D4A2A,#3A6B36);">🏙️<div class="prop-img-overlay">Residential · Mumbai</div></div>
+        <div class="prop-body">
+          <div class="prop-name">Lodha Primero BKC</div>
+          <div class="prop-location">📍 Bandra Kurla Complex, Mumbai</div>
+          <div class="prop-stats">
+            <div class="prop-stat-item"><div class="prop-stat-label">Unit Price</div><div class="prop-stat-val">₹3,950</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Min. Invest.</div><div class="prop-stat-val">5 units</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Yield</div><div class="prop-stat-val" style="color:var(--green);">7.8% p.a.</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Total Value</div><div class="prop-stat-val">₹24.5Cr</div></div>
+          </div>
+          <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;"><span class="muted">Available</span><span style="font-weight:500;">2,100/3,000 units</span></div><div class="units-bar"><div class="units-fill" style="width:70%;"></div></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;"><span class="badge badge-green">✓ Open</span><button class="btn btn-sm btn-gold" onclick="event.stopPropagation();go('s-prop-detail')">Subscribe →</button></div>
+        </div>
+      </div>
+      <div class="prop-card" onclick="go('s-prop-detail')">
+        <div class="prop-img" style="background:linear-gradient(135deg,#4A2A1A,#7A3A1B);">🏗️<div class="prop-img-overlay">Commercial · Gurugram</div></div>
+        <div class="prop-body">
+          <div class="prop-name">DLF CyberHub Phase 3</div>
+          <div class="prop-location">📍 Sector 24, Gurugram</div>
+          <div class="prop-stats">
+            <div class="prop-stat-item"><div class="prop-stat-label">Unit Price</div><div class="prop-stat-val">₹4,700</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Min. Invest.</div><div class="prop-stat-val">20 units</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Yield</div><div class="prop-stat-val" style="color:var(--green);">10.1% p.a.</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Total Value</div><div class="prop-stat-val">₹18.8Cr</div></div>
+          </div>
+          <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;"><span class="muted">Available</span><span style="font-weight:500;color:var(--red);">420/2,000 units</span></div><div class="units-bar"><div class="units-fill" style="width:21%;background:var(--red);"></div></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;"><span class="badge badge-red">🔥 Almost full</span><button class="btn btn-sm btn-gold" onclick="event.stopPropagation();go('s-prop-detail')">Subscribe →</button></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:20px;padding:14px 18px;background:var(--amber-bg);border:1px solid rgba(183,121,31,0.2);border-radius:var(--radius);font-size:12.5px;color:var(--slate);">
+      ⚠️ <strong>Risk Disclaimer:</strong> Fractional real estate investments are subject to market risk. Past returns are not indicative of future performance. Please read the offering documents carefully before investing.
+    </div>
+  </div></div>
+</div>
+
+<!-- ═══ SCREEN: PROPERTY DETAIL ═══ -->
+<div id="s-prop-detail" class="screen">
+  <div class="browser-bar"><div class="browser-dots"><div class="browser-dot dot-r"></div><div class="browser-dot dot-y"></div><div class="browser-dot dot-g"></div></div><div class="browser-url">🔒 portal.propitz.com/properties/prestige-koramangala</div><div class="screen-nav-label">Investor · Property Detail</div></div>
+  <div class="role-bar"><span class="role-label">View as:</span><button class="role-btn active" onclick="sw('investor',this)">👤 Investor</button><button class="role-btn" onclick="sw('admin',this)">🛡 Admin</button><span style="margin-left:auto;"><button class="btn btn-sm btn-outline" onclick="go('s-properties')">← Back</button></span></div>
+  <div class="topnav">
+    <div class="logo" onclick="go('s-dashboard')">Propitz<span>Investor Portal</span></div>
+    <div class="nav-links">
+      <div class="nav-link" onclick="go('s-dashboard')">Dashboard</div>
+      <div class="nav-link active" onclick="go('s-properties')">Properties</div>
+      <div class="nav-link" onclick="go('s-transactions')">Transactions</div>
+      <div class="nav-link" onclick="go('s-documents')">Documents</div>
+    </div>
+    <div class="nav-right"><button class="notif-btn">🔔<div class="notif-badge"></div></button><div class="nav-avatar">RM</div></div>
+  </div>
+  <div class="page-body"><div class="page-inner">
+    <div style="height:200px;background:linear-gradient(135deg,#1B3057,#2A4A7A);border-radius:var(--radius-lg);margin-bottom:24px;display:flex;align-items:center;justify-content:center;font-size:64px;position:relative;overflow:hidden;">
+      🏢
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 24px;background:linear-gradient(transparent,rgba(15,30,56,0.85));">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div><div style="font-family:var(--font-display);font-size:22px;color:#fff;">Prestige Koramangala</div><div style="font-size:13px;color:rgba(255,255,255,0.65);">📍 Koramangala 5th Block, Bengaluru · Commercial</div></div>
+          <span class="badge badge-gold" style="font-size:13px;padding:6px 14px;">⚡ Filling fast</span>
+        </div>
+      </div>
+    </div>
+    <div class="two-col-70">
+      <div style="display:flex;flex-direction:column;gap:18px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Property Overview</span></div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+              <div class="prop-stat-item"><div class="prop-stat-label">Total Valuation</div><div class="prop-stat-val">₹12.8 Cr</div></div>
+              <div class="prop-stat-item"><div class="prop-stat-label">Total Units</div><div class="prop-stat-val">1,000</div></div>
+              <div class="prop-stat-item"><div class="prop-stat-label">Unit Price</div><div class="prop-stat-val">₹2,287</div></div>
+              <div class="prop-stat-item"><div class="prop-stat-label">Projected Yield</div><div class="prop-stat-val" style="color:var(--green);">9.2% p.a.</div></div>
+              <div class="prop-stat-item"><div class="prop-stat-label">Holding Period</div><div class="prop-stat-val">5–7 years</div></div>
+              <div class="prop-stat-item"><div class="prop-stat-label">Asset Class</div><div class="prop-stat-val">Commercial</div></div>
+            </div>
+            <p style="font-size:13.5px;color:var(--slate);line-height:1.75;">Grade-A commercial complex in the heart of Koramangala's tech corridor. Fully leased to Fortune 500 tenants with WALE of 6.3 years. Quarterly distributions from rental income with capital appreciation potential from Bengaluru's strong market fundamentals.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Valuation History</span></div>
+          <div class="card-body">
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:6px;"><span style="font-size:12px;color:var(--slate-light);">Unit price (₹) · Last 6 quarters</span><span style="font-size:13px;font-weight:600;color:var(--green);">↑ 14.4% over period</span></div>
+            <div class="chart-area">
+              <div class="chart-bar" style="height:55%;"></div>
+              <div class="chart-bar" style="height:60%;"></div>
+              <div class="chart-bar" style="height:68%;"></div>
+              <div class="chart-bar" style="height:74%;"></div>
+              <div class="chart-bar" style="height:83%;"></div>
+              <div class="chart-bar active" style="height:90%;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--slate-light);margin-top:4px;"><span>Q4 '24</span><span>Q1 '25</span><span>Q2 '25</span><span>Q3 '25</span><span>Q4 '25</span><span>Q1 '26</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Documents</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--surface-2);border-radius:var(--radius-sm);"><span style="font-size:13px;">📄 Due Diligence Report</span><button class="btn btn-sm btn-outline" onclick="toast('📄 Downloading Due Diligence Report…')">Download</button></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--surface-2);border-radius:var(--radius-sm);"><span style="font-size:13px;">📄 Title Report & Legal Opinion</span><button class="btn btn-sm btn-outline" onclick="toast('📄 Downloading Title Report…')">Download</button></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--surface-2);border-radius:var(--radius-sm);"><span style="font-size:13px;">📄 Offering Brochure</span><button class="btn btn-sm btn-outline" onclick="toast('📄 Downloading Brochure…')">Download</button></div>
+          </div>
+        </div>
+      </div>
+      <div style="position:sticky;top:20px;display:flex;flex-direction:column;gap:14px;">
+        <div class="sub-widget">
+          <h3>Invest in this property</h3>
+          <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:10px;">Minimum 10 units · 880 available</div>
+          <div class="sub-input">
+            <input type="number" id="unit-input" value="10" min="10" max="880" oninput="calcSub(this.value)">
+            <span>units</span>
+          </div>
+          <div class="sub-row"><span style="color:rgba(255,255,255,0.65);">Unit price</span><span>₹2,287</span></div>
+          <div class="sub-row"><span style="color:rgba(255,255,255,0.65);">Subtotal</span><span id="sub-subtotal">₹22,870</span></div>
+          <div class="sub-row"><span style="color:rgba(255,255,255,0.65);">Platform fee (1.5%)</span><span id="sub-fee">₹343</span></div>
+          <div class="sub-row total"><span>Total payable</span><span id="sub-total">₹23,213</span></div>
+          <button class="sub-btn" onclick="openModal('m-payment')">Proceed to Payment →</button>
+        </div>
+        <div class="card" style="padding:16px;">
+          <div style="font-size:12.5px;font-weight:600;color:var(--navy);margin-bottom:8px;">Availability</div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span class="muted">880 of 1,000 units available</span><span style="font-weight:600;color:var(--amber);">88% sold</span></div>
+          <div class="progress-wrap"><div class="progress-fill" style="width:88%;background:var(--amber);"></div></div>
+        </div>
+        <div style="padding:12px 14px;background:var(--amber-bg);border:1px solid rgba(183,121,31,0.2);border-radius:var(--radius-sm);font-size:11.5px;color:var(--slate);line-height:1.6;">⚠️ Projected returns are estimates only and not guaranteed. Investments are illiquid in Phase 1.</div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ═══ SCREEN: TRANSACTIONS ═══ -->
+<div id="s-transactions" class="screen">
+  <div class="browser-bar"><div class="browser-dots"><div class="browser-dot dot-r"></div><div class="browser-dot dot-y"></div><div class="browser-dot dot-g"></div></div><div class="browser-url">🔒 portal.propitz.com/transactions</div><div class="screen-nav-label">Investor · Transactions</div></div>
+  <div class="role-bar"><span class="role-label">View as:</span><button class="role-btn active" onclick="sw('investor',this)">👤 Investor</button><button class="role-btn" onclick="sw('admin',this)">🛡 Admin</button><span style="margin-left:auto;color:var(--slate-light);font-size:12px;">Rahul Mehta</span></div>
+  <div class="topnav">
+    <div class="logo" onclick="go('s-dashboard')">Propitz<span>Investor Portal</span></div>
+    <div class="nav-links">
+      <div class="nav-link" onclick="go('s-dashboard')">Dashboard</div>
+      <div class="nav-link" onclick="go('s-properties')">Properties</div>
+      <div class="nav-link active">Transactions</div>
+      <div class="nav-link" onclick="go('s-documents')">Documents</div>
+    </div>
+    <div class="nav-right"><button class="notif-btn">🔔<div class="notif-badge"></div></button><div class="nav-avatar">RM</div></div>
+  </div>
+  <div class="page-body"><div class="page-inner">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+      <div><h1>Transactions</h1><div class="subtitle">Full history of investments, distributions & fees</div></div>
+      <button class="btn btn-outline" onclick="toast('📊 CSV export started…')">⬇ Export CSV</button>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+      <select class="form-select" style="width:auto;padding:8px 14px;font-size:13px;"><option>All types</option><option>Investment</option><option>Distribution</option><option>Fee</option></select>
+      <select class="form-select" style="width:auto;padding:8px 14px;font-size:13px;"><option>All properties</option><option>Koramangala</option><option>Lodha BKC</option><option>DLF CH3</option></select>
+      <select class="form-select" style="width:auto;padding:8px 14px;font-size:13px;"><option>All statuses</option><option>Completed</option><option>Pending</option></select>
+    </div>
+    <div class="card">
+      <table class="data-table">
+        <thead><tr><th>Ref. ID</th><th>Date</th><th>Type</th><th>Property</th><th>Units</th><th>Gross</th><th>Fee</th><th>Net</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="muted" style="font-size:12px;">TXN-0091</td><td class="muted">20 May 26</td><td><span class="badge badge-green">Distribution</span></td><td>Lodha BKC</td><td class="muted">—</td><td class="num-pos">+₹18,400</td><td class="muted">₹920</td><td class="num-pos">+₹17,480</td><td><span class="badge badge-green">Completed</span></td></tr>
+          <tr><td class="muted" style="font-size:12px;">TXN-0078</td><td class="muted">02 May 26</td><td><span class="badge badge-navy">Investment</span></td><td>DLF CH3</td><td class="num">80</td><td class="num">₹3,36,000</td><td class="muted">₹5,040</td><td class="num">₹3,41,040</td><td><span class="badge badge-green">Completed</span></td></tr>
+          <tr><td class="muted" style="font-size:12px;">TXN-0061</td><td class="muted">14 Apr 26</td><td><span class="badge badge-navy">Investment</span></td><td>Koramangala</td><td class="num">120</td><td class="num">₹2,40,000</td><td class="muted">₹3,600</td><td class="num">₹2,43,600</td><td><span class="badge badge-green">Completed</span></td></tr>
+          <tr><td class="muted" style="font-size:12px;">TXN-0043</td><td class="muted">01 Mar 26</td><td><span class="badge badge-amber">Mgmt Fee</span></td><td>Lodha BKC</td><td class="muted">—</td><td class="muted">—</td><td class="muted">₹14,000</td><td class="num-neg">−₹14,000</td><td><span class="badge badge-green">Completed</span></td></tr>
+          <tr><td class="muted" style="font-size:12px;">TXN-0011</td><td class="muted">15 Jan 26</td><td><span class="badge badge-navy">Investment</span></td><td>Lodha BKC</td><td class="num">200</td><td class="num">₹7,00,000</td><td class="muted">₹10,500</td><td class="num">₹7,10,500</td><td><span class="badge badge-green">Completed</span></td></tr>
+          <tr><td class="muted" style="font-size:12px;">TXN-0987</td><td class="muted">20 Dec 25</td><td><span class="badge badge-red">Refund</span></td><td>DLF CH3</td><td class="muted">—</td><td class="num-pos">+₹42,000</td><td class="muted">—</td><td class="num-pos">+₹42,000</td><td><span class="badge badge-amber">Processing</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+</div>
+
+<!-- ═══ SCREEN: DOCUMENTS ═══ -->
+<div id="s-documents" class="screen">
+  <div class="browser-bar"><div class="browser-dots"><div class="browser-dot dot-r"></div><div class="browser-dot dot-y"></div><div class="browser-dot dot-g"></div></div><div class="browser-url">🔒 portal.propitz.com/documents</div><div class="screen-nav-label">Investor · Documents</div></div>
+  <div class="role-bar"><span class="role-label">View as:</span><button class="role-btn active" onclick="sw('investor',this)">👤 Investor</button><button class="role-btn" onclick="sw('admin',this)">🛡 Admin</button><span style="margin-left:auto;color:var(--slate-light);font-size:12px;">Rahul Mehta</span></div>
+  <div class="topnav">
+    <div class="logo" onclick="go('s-dashboard')">Propitz<span>Investor Portal</span></div>
+    <div class="nav-links">
+      <div class="nav-link" onclick="go('s-dashboard')">Dashboard</div>
+      <div class="nav-link" onclick="go('s-properties')">Properties</div>
+      <div class="nav-link" onclick="go('s-transactions')">Transactions</div>
+      <div class="nav-link active">Documents</div>
+    </div>
+    <div class="nav-right"><button class="notif-btn">🔔<div class="notif-badge"></div></button><div class="nav-avatar">RM</div></div>
+  </div>
+  <div class="page-body"><div class="page-inner">
+    <div class="page-header"><h1>Documents</h1><div class="subtitle">Investment agreements, certificates & statements</div></div>
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">📜 Ownership Certificates</span><span class="badge badge-gold">Auto-generated</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-sm);"><div><div style="font-size:13.5px;font-weight:500;">Ownership Certificate — Prestige Koramangala</div><div class="muted" style="font-size:12px;">120 units · Issued 14 Apr 2026 · v1</div></div><button class="btn btn-sm btn-outline" onclick="toast('📄 Certificate downloaded')">⬇ Download PDF</button></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-sm);"><div><div style="font-size:13.5px;font-weight:500;">Ownership Certificate — Lodha Primero BKC</div><div class="muted" style="font-size:12px;">200 units · Issued 15 Jan 2026 · v1</div></div><button class="btn btn-sm btn-outline" onclick="toast('📄 Certificate downloaded')">⬇ Download PDF</button></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-sm);"><div><div style="font-size:13.5px;font-weight:500;">Ownership Certificate — DLF CyberHub Phase 3</div><div class="muted" style="font-size:12px;">80 units · Issued 02 May 2026 · v1</div></div><button class="btn btn-sm btn-outline" onclick="toast('📄 Certificate downloaded')">⬇ Download PDF</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">📊 Portfolio Statements</span><span class="badge badge-navy">Generated 1st of each month</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-sm);"><div><div style="font-size:13.5px;font-weight:500;">Portfolio Statement — April 2026</div><div class="muted" style="font-size:12px;">Generated 01 May 2026</div></div><button class="btn btn-sm btn-outline" onclick="toast('📊 Statement downloaded')">⬇ Download PDF</button></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-sm);"><div><div style="font-size:13.5px;font-weight:500;">Portfolio Statement — March 2026</div><div class="muted" style="font-size:12px;">Generated 01 Apr 2026</div></div><button class="btn btn-sm btn-outline" onclick="toast('📊 Statement downloaded')">⬇ Download PDF</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">📋 Investment Agreements</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-sm);"><div><div style="font-size:13.5px;font-weight:500;">Investment Agreement — Prestige Koramangala</div><div class="muted" style="font-size:12px;">Signed digitally 14 Apr 2026</div></div><button class="btn btn-sm btn-outline" onclick="toast('📋 Agreement downloaded')">⬇ Download PDF</button></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-sm);"><div><div style="font-size:13.5px;font-weight:500;">Platform Terms & Conditions v3.1</div><div class="muted" style="font-size:12px;">Effective 01 Jan 2026</div></div><button class="btn btn-sm btn-outline" onclick="toast('📋 T&C downloaded')">⬇ Download PDF</button></div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ═══ SCREEN: KYC ONBOARDING ═══ -->
+<div id="s-kyc" class="screen">
+  <div class="browser-bar"><div class="browser-dots"><div class="browser-dot dot-r"></div><div class="browser-dot dot-y"></div><div class="browser-dot dot-g"></div></div><div class="browser-url">🔒 portal.propitz.com/onboarding/kyc</div><div class="screen-nav-label">Investor · KYC Onboarding</div></div>
+  <div class="topnav"><div class="logo">Propitz<span>Onboarding</span></div><div class="nav-right"><button class="btn btn-outline btn-sm" onclick="go('s-login')" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.2);">← Back to Login</button></div></div>
+  <div class="page-body"><div class="page-inner" style="max-width:640px;">
+    <div class="page-header" style="text-align:center;"><h1>Complete your KYC</h1><div class="subtitle">Required before accessing investment features · Takes ~3 minutes</div></div>
+    <div class="stepper">
+      <div class="step done"><div class="step-num">✓</div><div class="step-label">Account</div></div>
+      <div class="step-connector done"></div>
+      <div class="step current"><div class="step-num">2</div><div class="step-label">Personal</div></div>
+      <div class="step-connector"></div>
+      <div class="step"><div class="step-num">3</div><div class="step-label">Identity</div></div>
+      <div class="step-connector"></div>
+      <div class="step"><div class="step-num">4</div><div class="step-label">Bank</div></div>
+      <div class="step-connector"></div>
+      <div class="step"><div class="step-num">5</div><div class="step-label">Review</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Personal Details</span><span class="badge badge-amber">Step 2 of 5</span></div>
+      <div class="card-body">
+        <div class="two-col">
+          <div class="form-group"><label class="form-label">First Name</label><input class="form-input" value="Rahul"></div>
+          <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" value="Mehta"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-input" type="date" value="1990-07-15"></div>
+        <div class="form-group"><label class="form-label">Mobile Number</label><input class="form-input" value="+91 98765 43210"><div class="form-hint">OTP will be sent for verification</div></div>
+        <div class="form-group"><label class="form-label">Residential Address</label><input class="form-input" value="Flat 402, Prestige Estates" style="margin-bottom:8px;"><input class="form-input" value="Indiranagar, Bengaluru 560038"></div>
+        <div class="form-group"><label class="form-label">Investor Type</label>
+          <select class="form-select"><option selected>Individual - Resident Indian</option><option>Individual - NRI</option><option>HUF</option><option>Corporate Entity</option></select>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:space-between;margin-top:8px;">
+          <button class="btn btn-outline" onclick="go('s-login')">← Back</button>
+          <button class="btn btn-gold" onclick="toast('✓ Details saved! Moving to identity step…');go('s-dashboard')">Continue to Identity →</button>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ═══ SCREEN: ADMIN DASHBOARD ═══ -->
+<div id="s-admin" class="screen">
+  <div class="browser-bar"><div class="browser-dots"><div class="browser-dot dot-r"></div><div class="browser-dot dot-y"></div><div class="browser-dot dot-g"></div></div><div class="browser-url">🔒 portal.propitz.com/admin</div><div class="screen-nav-label">Admin · Dashboard</div></div>
+  <div class="role-bar"><span class="role-label">View as:</span><button class="role-btn" onclick="sw('investor',this)">👤 Investor</button><button class="role-btn active" onclick="sw('admin',this)">🛡 Admin</button><span style="margin-left:auto;color:var(--slate-light);font-size:12px;">Priya Nair (Admin)</span><button class="btn btn-sm btn-outline" style="font-size:11px;padding:3px 10px;" onclick="go('s-login')">Logout</button></div>
+  <div class="topnav" style="padding:0;"><div class="logo" style="padding:0 24px;">Propitz<span>Admin</span></div></div>
+  <div class="admin-layout">
+    <div class="sidebar">
+      <div class="sidebar-section">Overview</div>
+      <div class="sidebar-item active" onclick="go('s-admin')"><div class="sidebar-icon">📊</div>Dashboard</div>
+      <div class="sidebar-section">Management</div>
+      <div class="sidebar-item" onclick="go('s-admin-txn')"><div class="sidebar-icon">⏳</div>Transactions<span style="margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;padding:1px 6px;border-radius:99px;font-weight:700;">3</span></div>
+      <div class="sidebar-item" onclick="go('s-admin-kyc')"><div class="sidebar-icon">👥</div>KYC Review<span style="margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;padding:1px 6px;border-radius:99px;font-weight:700;">7</span></div>
+      <div class="sidebar-item"><div class="sidebar-icon">🏢</div>Properties</div>
+      <div class="sidebar-item"><div class="sidebar-icon">💰</div>Valuations</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📁</div>Documents</div>
+      <div class="sidebar-section">Reports</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📈</div>Analytics</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📋</div>Audit Logs</div>
+      <div class="sidebar-section">System</div>
+      <div class="sidebar-item"><div class="sidebar-icon">⚙️</div>Settings</div>
+    </div>
+    <div class="admin-content"><div class="page-inner">
+      <div class="page-header"><h1>Admin Dashboard</h1><div class="subtitle">Platform overview · 22 May 2026</div></div>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">Total AUM</div><div class="kpi-value">₹56.1Cr</div><div class="kpi-delta up">↑ ₹4.2Cr this month</div></div>
+        <div class="kpi-card"><div class="kpi-label">Total Investors</div><div class="kpi-value">342</div><div class="kpi-delta up">↑ 28 this month</div></div>
+        <div class="kpi-card"><div class="kpi-label">Pending KYC</div><div class="kpi-value" style="color:var(--amber);">7</div><div class="kpi-delta neutral">Awaiting review</div></div>
+        <div class="kpi-card"><div class="kpi-label">Pending Txns</div><div class="kpi-value" style="color:var(--amber);">3</div><div class="kpi-delta neutral">Awaiting approval</div></div>
+      </div>
+      <div class="two-col" style="margin-bottom:18px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">⏳ Pending Transactions</span><span class="card-link" onclick="go('s-admin-txn')">View all →</span></div>
+          <table class="data-table">
+            <thead><tr><th>Investor</th><th>Property</th><th>Amount</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td><div style="font-weight:500;">Ananya Krishnan</div><div class="muted" style="font-size:11px;">TXN-0094 · 22 May</div></td><td>Koramangala</td><td class="num">₹45,740</td><td><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-success" onclick="toast('✓ Transaction approved · Units allocated · Certificate generated')">✓</button><button class="btn btn-sm btn-danger" onclick="openModal('m-reject')">✗</button></div></td></tr>
+              <tr><td><div style="font-weight:500;">Vikram Shetty</div><div class="muted" style="font-size:11px;">TXN-0093 · 22 May</div></td><td>Lodha BKC</td><td class="num">₹1,97,500</td><td><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-success" onclick="toast('✓ Transaction approved · Units allocated')">✓</button><button class="btn btn-sm btn-danger" onclick="openModal('m-reject')">✗</button></div></td></tr>
+              <tr><td><div style="font-weight:500;">Meera Iyer</div><div class="muted" style="font-size:11px;">TXN-0092 · 21 May</div></td><td>DLF CH3</td><td class="num">₹94,000</td><td><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-success" onclick="toast('✓ Transaction approved')">✓</button><button class="btn btn-sm btn-danger" onclick="openModal('m-reject')">✗</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">👥 KYC Queue</span><span class="card-link" onclick="go('s-admin-kyc')">Review →</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--amber-bg);border-radius:var(--radius-sm);"><div><div style="font-size:13px;font-weight:500;">Rohan Gupta</div><div class="muted" style="font-size:11.5px;">Submitted 21 May</div></div><span class="badge badge-amber">Pending</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--amber-bg);border-radius:var(--radius-sm);"><div><div style="font-size:13px;font-weight:500;">Sunita Rao</div><div class="muted" style="font-size:11.5px;">Submitted 20 May</div></div><span class="badge badge-amber">Pending</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--surface-2);border-radius:var(--radius-sm);"><div style="font-size:13px;font-weight:500;">+ 5 more in queue</div><button class="btn btn-sm btn-outline" onclick="go('s-admin-kyc')">Review all →</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Property Performance</span><button class="btn btn-sm btn-outline" onclick="toast('📊 Exporting report…')">Export →</button></div>
+        <table class="data-table">
+          <thead><tr><th>Property</th><th>AUM</th><th>Investors</th><th>Units Sold</th><th>Status</th><th>Last Valuation</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:500;">Prestige Koramangala</td><td class="num">₹22.9Cr</td><td class="num">148</td><td><div>880/1000</div><div class="progress-wrap"><div class="progress-fill" style="width:88%;"></div></div></td><td><span class="badge badge-gold">⚡ Open</span></td><td class="muted">15 May 2026</td></tr>
+            <tr><td style="font-weight:500;">Lodha Primero BKC</td><td class="num">₹19.8Cr</td><td class="num">124</td><td><div>900/3000</div><div class="progress-wrap"><div class="progress-fill" style="width:30%;"></div></div></td><td><span class="badge badge-green">✓ Open</span></td><td class="muted">01 May 2026</td></tr>
+            <tr><td style="font-weight:500;">DLF CyberHub Phase 3</td><td class="num">₹13.4Cr</td><td class="num">70</td><td><div>1580/2000</div><div class="progress-wrap"><div class="progress-fill" style="width:79%;background:var(--amber);"></div></div></td><td><span class="badge badge-red">🔥 Almost full</span></td><td class="muted">10 May 2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN: ADMIN KYC ═══ -->
+<div id="s-admin-kyc" class="screen">
+  <div class="browser-bar"><div class="browser-dots"><div class="browser-dot dot-r"></div><div class="browser-dot dot-y"></div><div class="browser-dot dot-g"></div></div><div class="browser-url">🔒 portal.propitz.com/admin/kyc</div><div class="screen-nav-label">Admin · KYC Review</div></div>
+  <div class="role-bar"><span class="role-label">View as:</span><button class="role-btn" onclick="sw('investor',this)">👤 Investor</button><button class="role-btn active" onclick="sw('admin',this)">🛡 Admin</button><span style="margin-left:auto;color:var(--slate-light);font-size:12px;">Priya Nair (Admin)</span></div>
+  <div class="topnav" style="padding:0;"><div class="logo" style="padding:0 24px;">Propitz<span>Admin</span></div></div>
+  <div class="admin-layout">
+    <div class="sidebar">
+      <div class="sidebar-section">Overview</div>
+      <div class="sidebar-item" onclick="go('s-admin')"><div class="sidebar-icon">📊</div>Dashboard</div>
+      <div class="sidebar-section">Management</div>
+      <div class="sidebar-item" onclick="go('s-admin-txn')"><div class="sidebar-icon">⏳</div>Transactions<span style="margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;padding:1px 6px;border-radius:99px;font-weight:700;">3</span></div>
+      <div class="sidebar-item active"><div class="sidebar-icon">👥</div>KYC Review<span style="margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;padding:1px 6px;border-radius:99px;font-weight:700;">7</span></div>
+      <div class="sidebar-item"><div class="sidebar-icon">🏢</div>Properties</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📁</div>Documents</div>
+      <div class="sidebar-section">Reports</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📈</div>Analytics</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📋</div>Audit Logs</div>
+    </div>
+    <div class="admin-content"><div class="page-inner">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+        <div><h1>KYC Review Queue</h1><div class="subtitle">7 submissions pending · Manual review required</div></div>
+        <button class="btn btn-primary" onclick="toast('✓ 7 KYC submissions approved · Investors notified')">✓ Bulk Approve All</button>
+      </div>
+      <!-- Expanded KYC card -->
+      <div class="card" style="margin-bottom:16px;border-left:3px solid var(--amber);">
+        <div class="card-header" style="background:var(--amber-bg);">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:14px;">RG</div>
+            <div><div style="font-weight:600;font-size:14px;">Rohan Gupta</div><div class="muted" style="font-size:12px;">rohan.gupta@techcorp.in · Submitted 21 May 2026 at 3:42 PM</div></div>
+          </div>
+          <span class="badge badge-amber" style="font-size:12px;">⏳ Under Review</span>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+            <div><div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">PAN</div><div style="font-size:14px;font-weight:500;">ABCPG1234D</div></div>
+            <div><div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">Aadhaar (masked)</div><div style="font-size:14px;font-weight:500;">XXXX XXXX 7823</div></div>
+            <div><div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">Mobile</div><div style="font-size:14px;font-weight:500;">+91 98123 45678</div></div>
+            <div><div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">Bank Account</div><div style="font-size:14px;font-weight:500;">HDFC ••••4521</div></div>
+            <div><div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">Investor Type</div><div style="font-size:14px;font-weight:500;">Resident Indian</div></div>
+            <div><div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">Accreditation</div><div><span class="badge badge-navy">Not flagged</span></div></div>
+          </div>
+          <div style="font-size:12.5px;font-weight:600;margin-bottom:8px;color:var(--navy);">UPLOADED DOCUMENTS</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+            <div style="padding:10px 14px;background:var(--surface-2);border-radius:var(--radius-sm);font-size:13px;cursor:pointer;border:1px solid var(--border);" onclick="toast('🔍 Opening PAN Card inline preview…')">🪪 PAN Card.pdf <span class="muted" style="font-size:11px;">2.1 MB</span></div>
+            <div style="padding:10px 14px;background:var(--surface-2);border-radius:var(--radius-sm);font-size:13px;cursor:pointer;border:1px solid var(--border);" onclick="toast('🔍 Opening Address Proof inline preview…')">📄 Address Proof.pdf <span class="muted" style="font-size:11px;">1.4 MB</span></div>
+            <div style="padding:10px 14px;background:var(--surface-2);border-radius:var(--radius-sm);font-size:13px;cursor:pointer;border:1px solid var(--border);" onclick="toast('🔍 Opening Cancelled Cheque preview…')">🏦 Cancelled Cheque.jpg <span class="muted" style="font-size:11px;">820 KB</span></div>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label class="form-label">Admin Notes (visible to investor on rejection)</label>
+            <textarea class="form-input" placeholder="Add review notes here…" rows="2" style="resize:vertical;"></textarea>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-success" style="flex:1;justify-content:center;" onclick="toast('✓ KYC Approved for Rohan Gupta · Full access granted · Email sent')">✓ Approve KYC</button>
+            <button class="btn btn-danger" style="flex:1;justify-content:center;" onclick="toast('✗ KYC Rejected · Investor notified with reason')">✗ Reject with reason</button>
+            <button class="btn btn-outline" onclick="toast('🚩 Account flagged for AML review')">🚩 Flag AML</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Remaining in queue (6)</span></div>
+        <table class="data-table">
+          <thead><tr><th>Investor</th><th>Submitted</th><th>Type</th><th>Docs</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><div style="font-weight:500;">Sunita Rao</div><div class="muted" style="font-size:11px;">sunita.rao@gmail.com</div></td><td class="muted">20 May</td><td class="muted">Resident</td><td><span class="badge badge-green">3/3</span></td><td><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-success" onclick="toast('✓ KYC Approved for Sunita Rao')">✓</button><button class="btn btn-sm btn-danger" onclick="toast('✗ KYC Rejected')">✗</button></div></td></tr>
+            <tr><td><div style="font-weight:500;">Arjun Pillai</div><div class="muted" style="font-size:11px;">arjun.pillai@startup.io</div></td><td class="muted">19 May</td><td class="muted">NRI</td><td><span class="badge badge-red">2/3 ⚠</span></td><td><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-success" onclick="toast('⚠ Warning: Missing document. Approve anyway?')">✓</button><button class="btn btn-sm btn-danger" onclick="toast('✗ Rejected: Missing cancelled cheque · Investor notified')">✗</button></div></td></tr>
+            <tr><td><div style="font-weight:500;">Deepa Sharma</div><div class="muted" style="font-size:11px;">deepa.s@infosys.com</div></td><td class="muted">18 May</td><td class="muted">Resident</td><td><span class="badge badge-green">3/3</span></td><td><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-success" onclick="toast('✓ KYC Approved for Deepa Sharma')">✓</button><button class="btn btn-sm btn-danger" onclick="toast('✗ KYC Rejected')">✗</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN: ADMIN TRANSACTIONS ═══ -->
+<div id="s-admin-txn" class="screen">
+  <div class="browser-bar"><div class="browser-dots"><div class="browser-dot dot-r"></div><div class="browser-dot dot-y"></div><div class="browser-dot dot-g"></div></div><div class="browser-url">🔒 portal.propitz.com/admin/transactions</div><div class="screen-nav-label">Admin · Transaction Queue</div></div>
+  <div class="role-bar"><span class="role-label">View as:</span><button class="role-btn" onclick="sw('investor',this)">👤 Investor</button><button class="role-btn active" onclick="sw('admin',this)">🛡 Admin</button><span style="margin-left:auto;color:var(--slate-light);font-size:12px;">Priya Nair (Admin)</span></div>
+  <div class="topnav" style="padding:0;"><div class="logo" style="padding:0 24px;">Propitz<span>Admin</span></div></div>
+  <div class="admin-layout">
+    <div class="sidebar">
+      <div class="sidebar-section">Overview</div>
+      <div class="sidebar-item" onclick="go('s-admin')"><div class="sidebar-icon">📊</div>Dashboard</div>
+      <div class="sidebar-section">Management</div>
+      <div class="sidebar-item active"><div class="sidebar-icon">⏳</div>Transactions<span style="margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;padding:1px 6px;border-radius:99px;font-weight:700;">3</span></div>
+      <div class="sidebar-item" onclick="go('s-admin-kyc')"><div class="sidebar-icon">👥</div>KYC Review</div>
+      <div class="sidebar-item"><div class="sidebar-icon">🏢</div>Properties</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📁</div>Documents</div>
+      <div class="sidebar-section">Reports</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📈</div>Analytics</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📋</div>Audit Logs</div>
+    </div>
+    <div class="admin-content"><div class="page-inner">
+      <div class="page-header"><h1>Transaction Queue</h1><div class="subtitle">3 pending approval · All payments verified via Razorpay</div></div>
+      <div class="card" style="margin-bottom:18px;border-left:3px solid var(--amber);">
+        <div class="card-header" style="background:var(--amber-bg);"><span class="card-title">⏳ Pending Approval (3)</span></div>
+        <table class="data-table">
+          <thead><tr><th>Investor</th><th>Property</th><th>Units</th><th>Amount</th><th>Razorpay ID</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><div style="font-weight:500;">Ananya Krishnan</div><div class="muted" style="font-size:11px;">TXN-0094 · 22 May</div></td><td>Koramangala</td><td class="num">20</td><td class="num">₹45,740</td><td class="muted" style="font-size:11.5px;">pay_PQ7R3X…</td><td><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-success" onclick="toast('✓ Approved · 20 units allocated · Ownership certificate generated · Investor notified')">✓ Approve</button><button class="btn btn-sm btn-danger" onclick="openModal('m-reject')">✗ Reject</button></div></td></tr>
+            <tr><td><div style="font-weight:500;">Vikram Shetty</div><div class="muted" style="font-size:11px;">TXN-0093 · 22 May</div></td><td>Lodha BKC</td><td class="num">50</td><td class="num">₹1,97,500</td><td class="muted" style="font-size:11.5px;">pay_PQ6S2W…</td><td><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-success" onclick="toast('✓ Approved · 50 units allocated · Investor notified')">✓ Approve</button><button class="btn btn-sm btn-danger" onclick="openModal('m-reject')">✗ Reject</button></div></td></tr>
+            <tr><td><div style="font-weight:500;">Meera Iyer</div><div class="muted" style="font-size:11px;">TXN-0092 · 21 May</div></td><td>DLF CH3</td><td class="num">20</td><td class="num">₹94,000</td><td class="muted" style="font-size:11.5px;">pay_PP9T1V…</td><td><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-success" onclick="toast('✓ Approved · 20 units allocated')">✓ Approve</button><button class="btn btn-sm btn-danger" onclick="openModal('m-reject')">✗ Reject</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">All Transactions</span><button class="btn btn-sm btn-outline" onclick="toast('📊 CSV exported')">Export CSV</button></div>
+        <table class="data-table">
+          <thead><tr><th>Ref</th><th>Date</th><th>Investor</th><th>Type</th><th>Property</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td class="muted" style="font-size:11.5px;">TXN-0091</td><td class="muted">20 May</td><td>Rahul Mehta</td><td><span class="badge badge-green">Distribution</span></td><td>Lodha BKC</td><td class="num-pos">+₹18,400</td><td><span class="badge badge-green">Completed</span></td></tr>
+            <tr><td class="muted" style="font-size:11.5px;">TXN-0078</td><td class="muted">02 May</td><td>Rahul Mehta</td><td><span class="badge badge-navy">Investment</span></td><td>DLF CH3</td><td class="num">₹3,41,040</td><td><span class="badge badge-green">Completed</span></td></tr>
+            <tr><td class="muted" style="font-size:11.5px;">TXN-0061</td><td class="muted">14 Apr</td><td>Rahul Mehta</td><td><span class="badge badge-navy">Investment</span></td><td>Koramangala</td><td class="num">₹2,43,600</td><td><span class="badge badge-green">Completed</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ═══════════ MODALS ═══════════ -->
+
+<!-- Notifications -->
+<div id="m-notif" class="modal-backdrop" onclick="closeModal('m-notif')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header"><div class="modal-title">Notifications</div><button class="modal-close" onclick="closeModal('m-notif')">×</button></div>
+    <div class="modal-body">
+      <div class="notif-item"><div class="notif-icon" style="background:var(--green-bg);">📈</div><div class="notif-body"><div class="notif-title">Valuation updated: Prestige Koramangala</div><div style="font-size:12.5px;color:var(--slate);margin:3px 0;">Unit price updated to ₹2,287. Your portfolio value has increased by ₹3,444.</div><div class="notif-time">2 hours ago</div></div><div class="notif-unread"></div></div>
+      <div class="notif-item"><div class="notif-icon" style="background:var(--gold-pale);">💰</div><div class="notif-body"><div class="notif-title">Distribution of ₹17,480 credited</div><div style="font-size:12.5px;color:var(--slate);margin:3px 0;">Q1 2026 rental distribution for Lodha Primero BKC has been processed.</div><div class="notif-time">3 days ago</div></div></div>
+      <div class="notif-item"><div class="notif-icon" style="background:var(--green-bg);">✅</div><div class="notif-body"><div class="notif-title">Investment confirmed: DLF CyberHub Phase 3</div><div style="font-size:12.5px;color:var(--slate);margin:3px 0;">80 units allocated. Ownership certificate generated and available in Documents.</div><div class="notif-time">20 days ago</div></div></div>
+      <div class="notif-item" style="border-bottom:none;"><div class="notif-icon" style="background:var(--amber-bg);">📄</div><div class="notif-body"><div class="notif-title">Monthly statement ready: April 2026</div><div style="font-size:12.5px;color:var(--slate);margin:3px 0;">Your portfolio statement for April is available in the Documents section.</div><div class="notif-time">01 May 2026</div></div></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('m-notif');toast('✓ All notifications marked as read')">Mark all read</button></div>
+  </div>
+</div>
+
+<!-- Payment -->
+<div id="m-payment" class="modal-backdrop" onclick="closeModal('m-payment')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header"><div class="modal-title">Confirm Investment</div><button class="modal-close" onclick="closeModal('m-payment')">×</button></div>
+    <div class="modal-body">
+      <div style="background:var(--surface-2);border-radius:var(--radius);padding:16px;margin-bottom:20px;">
+        <div style="font-weight:600;margin-bottom:12px;font-size:14px;">Order Summary</div>
+        <div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:8px;"><span>Property</span><span style="font-weight:500;">Prestige Koramangala</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:8px;"><span>Units</span><span style="font-weight:500;" id="modal-units">10</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:8px;"><span>Unit price</span><span style="font-weight:500;">₹2,287</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:8px;"><span>Platform fee (1.5%)</span><span id="modal-fee">₹343</span></div>
+        <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px;display:flex;justify-content:space-between;font-size:15px;font-weight:700;"><span>Total Payable</span><span id="modal-total">₹23,213</span></div>
+      </div>
+      <div style="padding:12px 14px;background:var(--amber-bg);border-radius:var(--radius-sm);font-size:12px;color:var(--slate);margin-bottom:20px;line-height:1.6;">⚠️ By proceeding, you confirm you have read the offering documents and understand the risks. Units will be allocated after admin verification (typically 1 business day).</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:64px;height:28px;background:#072654;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;letter-spacing:1px;">RAZORPAY</div>
+        <span style="font-size:12px;color:var(--slate-light);">Secured payment gateway · 256-bit SSL</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('m-payment')">Cancel</button>
+      <button class="btn btn-gold" onclick="closeModal('m-payment');toast('🔐 Redirecting to Razorpay checkout…')">Pay <span id="modal-pay-total">₹23,213</span> via Razorpay →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reject transaction -->
+<div id="m-reject" class="modal-backdrop" onclick="closeModal('m-reject')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header"><div class="modal-title">Reject Transaction</div><button class="modal-close" onclick="closeModal('m-reject')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Rejection Reason (required)</label>
+        <select class="form-select" style="margin-bottom:10px;"><option>Select a reason…</option><option>Duplicate transaction detected</option><option>Payment verification failed</option><option>KYC not approved</option><option>Property no longer available</option><option>Other</option></select>
+        <textarea class="form-input" placeholder="Additional notes for the investor…" rows="3" style="resize:vertical;"></textarea>
+        <div class="form-hint">This message will be sent to the investor via email.</div>
+      </div>
+      <div style="padding:12px;background:var(--red-bg);border-radius:var(--radius-sm);font-size:12.5px;color:var(--red);">⚠️ Rejecting will automatically flag the payment for refund via Razorpay Refund API.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('m-reject')">Cancel</button>
+      <button class="btn btn-danger" onclick="closeModal('m-reject');toast('✗ Transaction rejected · Refund initiated · Investor notified via email')">Confirm Rejection</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profile -->
+<div id="m-profile" class="modal-backdrop" onclick="closeModal('m-profile')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header"><div class="modal-title">My Profile</div><button class="modal-close" onclick="closeModal('m-profile')">×</button></div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:16px;background:var(--surface-2);border-radius:var(--radius);">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:var(--navy);">RM</div>
+        <div><div style="font-weight:600;font-size:16px;">Rahul Mehta</div><div class="muted">rahul.mehta@gmail.com</div><div style="margin-top:4px;"><span class="badge badge-green">✓ KYC Approved</span> <span class="badge badge-navy">Resident Indian</span></div></div>
+      </div>
+      <div class="two-col">
+        <div class="form-group"><label class="form-label">Display Name</label><input class="form-input" value="Rahul Mehta"></div>
+        <div class="form-group"><label class="form-label">Mobile</label><input class="form-input" value="+91 98765 43210"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Investor Type</label><input class="form-input" value="Individual - Resident Indian" readonly style="background:var(--surface-2);"></div>
+      <div style="padding:10px 14px;background:var(--amber-bg);border-radius:var(--radius-sm);font-size:12.5px;color:var(--slate);">🔒 Bank account changes require re-verification. Contact support to update.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('m-profile')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('m-profile');toast('✓ Profile updated successfully')">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toastEl" class="toast"><span id="toast-msg"></span></div>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script>
+// Screen navigation
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) { el.classList.add('active'); window.scrollTo(0,0); }
+}
+
+// Role switcher
+function sw(role, el) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  if (role === 'admin') { go('s-admin'); toast('🛡 Switched to Admin view'); }
+  else { go('s-dashboard'); toast('👤 Switched to Investor view'); }
+}
+
+// Login
+let loginRole = 'investor';
+function setLoginTab(el, role) {
+  document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  loginRole = role;
+  document.getElementById('login-email').value = role === 'admin' ? 'priya.nair@propitz.com' : 'rahul.mehta@gmail.com';
+}
+function doLogin() {
+  const btn = document.getElementById('login-btn');
+  btn.textContent = 'Signing in…';
+  setTimeout(() => {
+    btn.textContent = 'Sign in →';
+    if (loginRole === 'admin') { go('s-admin'); toast('✓ Welcome, Priya!'); }
+    else { go('s-dashboard'); toast('✓ Welcome back, Rahul!'); }
+  }, 700);
+}
+
+// Modals
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open')); });
+
+// Subscription calculator
+function calcSub(v) {
+  const units = Math.max(10, parseInt(v) || 10);
+  const price = 2287;
+  const sub = units * price;
+  const fee = Math.round(sub * 0.015);
+  const total = sub + fee;
+  const fmt = n => '₹' + n.toLocaleString('en-IN');
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  set('sub-subtotal', fmt(sub));
+  set('sub-fee', fmt(fee));
+  set('sub-total', fmt(total));
+  set('modal-units', units);
+  set('modal-fee', fmt(fee));
+  set('modal-total', fmt(total));
+  set('modal-pay-total', fmt(total));
+}
+
+// Toast
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toastEl');
+  document.getElementById('toast-msg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+</script>
+</body>
+</html>
