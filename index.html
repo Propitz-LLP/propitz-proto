@@ -537,22 +537,16 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
       <div><h1>Transactions</h1><div class="subtitle">Full history of investments, distributions & fees</div></div>
       <button class="btn btn-outline" onclick="toast('📊 CSV export started…')">⬇ Export CSV</button>
     </div>
-    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
-      <select class="form-select" style="width:auto;padding:8px 14px;font-size:13px;"><option>All types</option><option>Investment</option><option>Distribution</option><option>Fee</option></select>
-      <select class="form-select" style="width:auto;padding:8px 14px;font-size:13px;"><option>All properties</option><option>Koramangala</option><option>Lodha BKC</option><option>DLF CH3</option></select>
-      <select class="form-select" style="width:auto;padding:8px 14px;font-size:13px;"><option>All statuses</option><option>Completed</option><option>Pending</option></select>
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;">
+      <select id="txn-filter-type" class="form-select" style="width:auto;padding:8px 14px;font-size:13px;" onchange="renderInvestorTxns()"><option value="">All types</option><option value="Investment">Investment</option><option value="Distribution">Distribution</option><option value="Fee">Fee</option><option value="Resale">Resale</option><option value="Refund">Refund</option></select>
+      <select id="txn-filter-prop" class="form-select" style="width:auto;padding:8px 14px;font-size:13px;" onchange="renderInvestorTxns()"><option value="">All properties</option><option value="prop-1">Koramangala</option><option value="prop-2">Lodha BKC</option><option value="prop-3">DLF CH3</option></select>
+      <select id="txn-filter-status" class="form-select" style="width:auto;padding:8px 14px;font-size:13px;" onchange="renderInvestorTxns()"><option value="">All statuses</option><option value="Completed">Completed</option><option value="Pending">Pending</option><option value="Processing">Processing</option><option value="Rejected">Rejected</option></select>
+      <button class="btn btn-gold btn-sm" style="margin-left:auto;" onclick="openModal('m-resale')">+ Request Resale</button>
     </div>
     <div class="card">
       <table class="data-table">
         <thead><tr><th>Ref. ID</th><th>Date</th><th>Type</th><th>Property</th><th>Units</th><th>Gross</th><th>Fee</th><th>Net</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr><td class="muted" style="font-size:12px;">TXN-0091</td><td class="muted">20 May 26</td><td><span class="badge badge-green">Distribution</span></td><td>Lodha BKC</td><td class="muted">—</td><td class="num-pos">+₹18,400</td><td class="muted">₹920</td><td class="num-pos">+₹17,480</td><td><span class="badge badge-green">Completed</span></td></tr>
-          <tr><td class="muted" style="font-size:12px;">TXN-0078</td><td class="muted">02 May 26</td><td><span class="badge badge-navy">Investment</span></td><td>DLF CH3</td><td class="num">80</td><td class="num">₹3,36,000</td><td class="muted">₹5,040</td><td class="num">₹3,41,040</td><td><span class="badge badge-green">Completed</span></td></tr>
-          <tr><td class="muted" style="font-size:12px;">TXN-0061</td><td class="muted">14 Apr 26</td><td><span class="badge badge-navy">Investment</span></td><td>Koramangala</td><td class="num">120</td><td class="num">₹2,40,000</td><td class="muted">₹3,600</td><td class="num">₹2,43,600</td><td><span class="badge badge-green">Completed</span></td></tr>
-          <tr><td class="muted" style="font-size:12px;">TXN-0043</td><td class="muted">01 Mar 26</td><td><span class="badge badge-amber">Mgmt Fee</span></td><td>Lodha BKC</td><td class="muted">—</td><td class="muted">—</td><td class="muted">₹14,000</td><td class="num-neg">−₹14,000</td><td><span class="badge badge-green">Completed</span></td></tr>
-          <tr><td class="muted" style="font-size:12px;">TXN-0011</td><td class="muted">15 Jan 26</td><td><span class="badge badge-navy">Investment</span></td><td>Lodha BKC</td><td class="num">200</td><td class="num">₹7,00,000</td><td class="muted">₹10,500</td><td class="num">₹7,10,500</td><td><span class="badge badge-green">Completed</span></td></tr>
-          <tr><td class="muted" style="font-size:12px;">TXN-0987</td><td class="muted">20 Dec 25</td><td><span class="badge badge-red">Refund</span></td><td>DLF CH3</td><td class="muted">—</td><td class="num-pos">+₹42,000</td><td class="muted">—</td><td class="num-pos">+₹42,000</td><td><span class="badge badge-amber">Processing</span></td></tr>
-        </tbody>
+        <tbody id="investor-txn-tbody"></tbody>
       </table>
     </div>
   </div></div>
@@ -798,27 +792,63 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
     </div>
     <div class="admin-content"><div class="page-inner">
       <div class="page-header"><h1>Transaction Queue</h1><div class="subtitle">3 pending approval · All payments verified via Razorpay</div></div>
-      <div class="card" style="margin-bottom:18px;border-left:3px solid var(--amber);">
-        <div class="card-header" style="background:var(--amber-bg);"><span class="card-title">⏳ Pending Approval (3)</span></div>
-        <table class="data-table">
-          <thead><tr><th>Investor</th><th>Property</th><th>Units</th><th>Amount</th><th>Razorpay ID</th><th>Action</th></tr></thead>
-          <tbody>
-            <tr><td><div style="font-weight:500;">Ananya Krishnan</div><div class="muted" style="font-size:11px;">TXN-0094 · 22 May</div></td><td>Koramangala</td><td class="num">20</td><td class="num">₹45,740</td><td class="muted" style="font-size:11.5px;">pay_PQ7R3X…</td><td><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-success" onclick="toast('✓ Approved · 20 units allocated · Ownership certificate generated · Investor notified')">✓ Approve</button><button class="btn btn-sm btn-danger" onclick="openModal('m-reject')">✗ Reject</button></div></td></tr>
-            <tr><td><div style="font-weight:500;">Vikram Shetty</div><div class="muted" style="font-size:11px;">TXN-0093 · 22 May</div></td><td>Lodha BKC</td><td class="num">50</td><td class="num">₹1,97,500</td><td class="muted" style="font-size:11.5px;">pay_PQ6S2W…</td><td><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-success" onclick="toast('✓ Approved · 50 units allocated · Investor notified')">✓ Approve</button><button class="btn btn-sm btn-danger" onclick="openModal('m-reject')">✗ Reject</button></div></td></tr>
-            <tr><td><div style="font-weight:500;">Meera Iyer</div><div class="muted" style="font-size:11px;">TXN-0092 · 21 May</div></td><td>DLF CH3</td><td class="num">20</td><td class="num">₹94,000</td><td class="muted" style="font-size:11.5px;">pay_PP9T1V…</td><td><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-success" onclick="toast('✓ Approved · 20 units allocated')">✓ Approve</button><button class="btn btn-sm btn-danger" onclick="openModal('m-reject')">✗ Reject</button></div></td></tr>
-          </tbody>
-        </table>
+      <!-- Admin txn tabs -->
+      <div style="display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid var(--border);">
+        <div class="login-tab active" id="atab-pending" onclick="switchAdminTxnTab('pending')" style="flex:none;padding:9px 20px;">⏳ Pending <span id="atab-pending-count" style="background:var(--gold);color:var(--navy);font-size:10px;padding:1px 7px;border-radius:99px;font-weight:700;margin-left:6px;"></span></div>
+        <div class="login-tab" id="atab-all" onclick="switchAdminTxnTab('all')" style="flex:none;padding:9px 20px;">All Transactions</div>
+        <div class="login-tab" id="atab-distribution" onclick="switchAdminTxnTab('distribution')" style="flex:none;padding:9px 20px;">💰 Distributions</div>
+        <div class="login-tab" id="atab-fees" onclick="switchAdminTxnTab('fees')" style="flex:none;padding:9px 20px;">📋 Fees</div>
+        <div style="margin-left:auto;display:flex;align-items:center;padding-bottom:4px;">
+          <button class="btn btn-sm btn-outline" onclick="exportAdminTxnCSV()">⬇ Export CSV</button>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-header"><span class="card-title">All Transactions</span><button class="btn btn-sm btn-outline" onclick="toast('📊 CSV exported')">Export CSV</button></div>
-        <table class="data-table">
-          <thead><tr><th>Ref</th><th>Date</th><th>Investor</th><th>Type</th><th>Property</th><th>Amount</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td class="muted" style="font-size:11.5px;">TXN-0091</td><td class="muted">20 May</td><td>Rahul Mehta</td><td><span class="badge badge-green">Distribution</span></td><td>Lodha BKC</td><td class="num-pos">+₹18,400</td><td><span class="badge badge-green">Completed</span></td></tr>
-            <tr><td class="muted" style="font-size:11.5px;">TXN-0078</td><td class="muted">02 May</td><td>Rahul Mehta</td><td><span class="badge badge-navy">Investment</span></td><td>DLF CH3</td><td class="num">₹3,41,040</td><td><span class="badge badge-green">Completed</span></td></tr>
-            <tr><td class="muted" style="font-size:11.5px;">TXN-0061</td><td class="muted">14 Apr</td><td>Rahul Mehta</td><td><span class="badge badge-navy">Investment</span></td><td>Koramangala</td><td class="num">₹2,43,600</td><td><span class="badge badge-green">Completed</span></td></tr>
-          </tbody>
-        </table>
+
+      <!-- Pending tab -->
+      <div id="atab-panel-pending">
+        <div class="card" style="border-left:3px solid var(--amber);">
+          <div class="card-header" style="background:var(--amber-bg);"><span class="card-title">⏳ Pending Approval</span></div>
+          <table class="data-table">
+            <thead><tr><th>Investor</th><th>Property</th><th>Units</th><th>Amount</th><th>Razorpay ID</th><th>Action</th></tr></thead>
+            <tbody id="admin-pending-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- All tab -->
+      <div id="atab-panel-all" style="display:none;">
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Ref</th><th>Date</th><th>Investor</th><th>Type</th><th>Property</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody id="admin-all-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Distribution tab -->
+      <div id="atab-panel-distribution" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div style="font-size:13.5px;color:var(--slate);">Initiate a rental distribution payout to all unit holders of a property.</div>
+          <button class="btn btn-gold" onclick="go('s-admin-distribution')">+ New Distribution →</button>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Ref</th><th>Date</th><th>Property</th><th>Period</th><th>Per Unit</th><th>Total Paid</th><th>Investors</th><th>Status</th></tr></thead>
+            <tbody id="admin-dist-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Fees tab -->
+      <div id="atab-panel-fees" style="display:none;">
+        <div style="padding:14px 18px;background:var(--amber-bg);border:1px solid rgba(183,121,31,0.2);border-radius:var(--radius);font-size:12.5px;color:var(--slate);margin-bottom:16px;">
+          ⚠️ Annual management fees are auto-calculated on the 1st of each month. Review and approve before deduction from investor portfolios.
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Investor</th><th>Portfolio Value</th><th>Fee Rate</th><th>Fee Amount</th><th>Period</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="admin-fees-tbody"></tbody>
+          </table>
+        </div>
       </div>
     </div></div>
   </div>
@@ -909,19 +939,943 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
   </div>
 </div>
 
+<!-- ═══ SCREEN: ADMIN DISTRIBUTION ═══ -->
+<div id="s-admin-distribution" class="screen">
+  <div class="browser-bar"><div class="browser-dots"><div class="browser-dot dot-r"></div><div class="browser-dot dot-y"></div><div class="browser-dot dot-g"></div></div><div class="browser-url">🔒 portal.propitz.com/admin/distributions/new</div><div class="screen-nav-label">Admin · New Distribution</div></div>
+  <div class="role-bar"><span class="role-label">View as:</span><button class="role-btn" onclick="sw('investor',this)">👤 Investor</button><button class="role-btn active" onclick="sw('admin',this)">🛡 Admin</button><span style="margin-left:auto;"><button class="btn btn-sm btn-outline" onclick="go('s-admin-txn')">← Back</button></span></div>
+  <div class="topnav" style="padding:0;"><div class="logo" style="padding:0 24px;">Propitz<span>Admin</span></div></div>
+  <div class="admin-layout">
+    <div class="sidebar">
+      <div class="sidebar-section">Overview</div>
+      <div class="sidebar-item" onclick="go('s-admin')"><div class="sidebar-icon">📊</div>Dashboard</div>
+      <div class="sidebar-section">Management</div>
+      <div class="sidebar-item active" onclick="go('s-admin-txn')"><div class="sidebar-icon">⏳</div>Transactions</div>
+      <div class="sidebar-item" onclick="go('s-admin-kyc')"><div class="sidebar-icon">👥</div>KYC Review</div>
+      <div class="sidebar-item"><div class="sidebar-icon">🏢</div>Properties</div>
+      <div class="sidebar-item"><div class="sidebar-icon">💰</div>Valuations</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📁</div>Documents</div>
+      <div class="sidebar-section">Reports</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📈</div>Analytics</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📋</div>Audit Logs</div>
+    </div>
+    <div class="admin-content"><div class="page-inner">
+      <div class="page-header"><h1>New Distribution</h1><div class="subtitle">Initiate a rental income payout to all unit holders of a property</div></div>
+      <div class="two-col-70" style="align-items:start;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Distribution Details</span></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Property</label>
+              <select class="form-select" id="dist-property" onchange="calcDistribution()">
+                <option value="">Select property…</option>
+                <option value="prop-1">Prestige Koramangala</option>
+                <option value="prop-2">Lodha Primero BKC</option>
+                <option value="prop-3">DLF CyberHub Phase 3</option>
+              </select>
+            </div>
+            <div class="two-col">
+              <div class="form-group">
+                <label class="form-label">Distribution Period</label>
+                <select class="form-select" id="dist-period">
+                  <option>Q2 2026 (Apr–Jun)</option>
+                  <option>Q1 2026 (Jan–Mar)</option>
+                  <option>Q4 2025 (Oct–Dec)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Distribution Date</label>
+                <input class="form-input" type="date" id="dist-date" value="2026-06-01">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Amount Per Unit (₹)</label>
+              <input class="form-input" type="number" id="dist-per-unit" placeholder="e.g. 92" oninput="calcDistribution()">
+              <div class="form-hint">Gross rental income per fractional unit for this period.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Distribution Fee (%)</label>
+              <input class="form-input" type="number" id="dist-fee-pct" value="5" oninput="calcDistribution()">
+              <div class="form-hint">Platform fee deducted from gross before payout to investors.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Notes (visible to investors)</label>
+              <textarea class="form-input" id="dist-notes" rows="2" placeholder="e.g. Q2 2026 rental income from fully-leased commercial space…" style="resize:vertical;"></textarea>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;position:sticky;top:20px;">
+          <div class="sub-widget" id="dist-summary">
+            <h3>Distribution Summary</h3>
+            <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:16px;">Fill in the details to see a preview.</div>
+            <div class="sub-row"><span style="color:rgba(255,255,255,0.65);">Property</span><span id="dist-s-prop">—</span></div>
+            <div class="sub-row"><span style="color:rgba(255,255,255,0.65);">Unit holders</span><span id="dist-s-holders">—</span></div>
+            <div class="sub-row"><span style="color:rgba(255,255,255,0.65);">Total units subscribed</span><span id="dist-s-units">—</span></div>
+            <div class="sub-row"><span style="color:rgba(255,255,255,0.65);">Gross per unit</span><span id="dist-s-gross-unit">—</span></div>
+            <div class="sub-row"><span style="color:rgba(255,255,255,0.65);">Gross total</span><span id="dist-s-gross">—</span></div>
+            <div class="sub-row"><span style="color:rgba(255,255,255,0.65);">Platform fee</span><span id="dist-s-fee">—</span></div>
+            <div class="sub-row total"><span>Net to investors</span><span id="dist-s-net">—</span></div>
+            <button class="sub-btn" id="dist-confirm-btn" onclick="confirmDistribution()" style="margin-top:16px;" disabled>Confirm & Initiate →</button>
+          </div>
+          <div style="padding:12px 14px;background:var(--amber-bg);border:1px solid rgba(183,121,31,0.2);border-radius:var(--radius-sm);font-size:11.5px;color:var(--slate);line-height:1.6;">⚠️ This action will create individual Distribution transactions for each investor and trigger email notifications. This cannot be undone.</div>
+        </div>
+      </div>
+
+      <!-- Investor preview table -->
+      <div class="card" style="margin-top:20px;" id="dist-preview-card">
+        <div class="card-header"><span class="card-title">Investor Payout Preview</span><span class="badge badge-navy" id="dist-preview-count"></span></div>
+        <table class="data-table">
+          <thead><tr><th>Investor</th><th>Units Held</th><th>Gross Payout</th><th>Fee Deducted</th><th>Net Payout</th></tr></thead>
+          <tbody id="dist-preview-tbody"></tbody>
+        </table>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ═══════════ NEW MODALS ═══════════ -->
+
+<!-- Resale Request -->
+<div id="m-resale" class="modal-backdrop" onclick="closeModal('m-resale')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header"><div class="modal-title">Request Resale</div><button class="modal-close" onclick="closeModal('m-resale')">×</button></div>
+    <div class="modal-body">
+      <div style="padding:12px 14px;background:var(--amber-bg);border:1px solid rgba(183,121,31,0.2);border-radius:var(--radius-sm);font-size:12.5px;color:var(--slate);margin-bottom:20px;line-height:1.6;">
+        ⚠️ Resale in Phase 1 is manually matched by the Propitz team. Processing may take 5–10 business days. There is no guarantee of a buyer at your indicated price.
+      </div>
+      <div class="form-group">
+        <label class="form-label">Select Holding to Sell</label>
+        <select class="form-select" id="resale-holding" onchange="updateResaleMax()">
+          <option value="">Choose property…</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Units to Sell</label>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <input class="form-input" type="number" id="resale-units" min="1" placeholder="0" oninput="calcResale()" style="flex:1;">
+          <span style="font-size:12.5px;color:var(--slate-light);white-space:nowrap;">of <strong id="resale-max-units">—</strong> held</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Indicative Price Per Unit (₹) <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--slate-light);">optional</span></label>
+        <input class="form-input" type="number" id="resale-price" placeholder="Leave blank to accept market price" oninput="calcResale()">
+        <div class="form-hint">Current unit price shown for reference: <strong id="resale-current-price">—</strong></div>
+      </div>
+      <div id="resale-summary" style="display:none;background:var(--surface-2);border-radius:var(--radius);padding:14px 16px;font-size:13.5px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span class="muted">Units to sell</span><span id="resale-s-units" style="font-weight:500;"></span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span class="muted">Indicative value</span><span id="resale-s-value" style="font-weight:500;"></span></div>
+        <div style="display:flex;justify-content:space-between;"><span class="muted">Exit fee (2%)</span><span id="resale-s-fee" style="font-weight:500;color:var(--red);"></span></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('m-resale')">Cancel</button>
+      <button class="btn btn-gold" onclick="submitResale()">Submit Resale Request →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Transaction Detail (Investor) -->
+<div id="m-txn-detail" class="modal-backdrop" onclick="closeModal('m-txn-detail')">
+  <div class="modal" style="width:580px;" onclick="event.stopPropagation()">
+    <div class="modal-header"><div class="modal-title" id="txnd-title">Transaction Detail</div><button class="modal-close" onclick="closeModal('m-txn-detail')">×</button></div>
+    <div class="modal-body">
+      <!-- Status timeline -->
+      <div style="margin-bottom:20px;">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--slate-light);font-weight:600;margin-bottom:12px;">Status Timeline</div>
+        <div id="txnd-timeline" style="display:flex;flex-direction:column;gap:0;"></div>
+      </div>
+      <!-- Details grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;" id="txnd-details"></div>
+      <!-- Fee breakdown -->
+      <div id="txnd-fee-section" style="background:var(--surface-2);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--slate-light);font-weight:600;margin-bottom:10px;">Fee Breakdown</div>
+        <div id="txnd-fees" style="display:flex;flex-direction:column;gap:6px;font-size:13.5px;"></div>
+      </div>
+      <!-- Linked document -->
+      <div id="txnd-doc-section" style="display:none;padding:10px 14px;background:var(--surface-2);border-radius:var(--radius-sm);display:flex;justify-content:space-between;align-items:center;">
+        <span id="txnd-doc-label" style="font-size:13px;">📄 Ownership Certificate</span>
+        <button class="btn btn-sm btn-outline" onclick="toast('📄 Document downloaded')">⬇ Download</button>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('m-txn-detail')">Close</button></div>
+  </div>
+</div>
+
+<!-- Transaction Detail (Admin) -->
+<div id="m-admin-txn-detail" class="modal-backdrop" onclick="closeModal('m-admin-txn-detail')">
+  <div class="modal" style="width:600px;" onclick="event.stopPropagation()">
+    <div class="modal-header"><div class="modal-title" id="atxnd-title">Transaction Detail</div><button class="modal-close" onclick="closeModal('m-admin-txn-detail')">×</button></div>
+    <div class="modal-body">
+      <!-- Investor info -->
+      <div id="atxnd-investor" style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--surface-2);border-radius:var(--radius);margin-bottom:18px;"></div>
+      <!-- Details grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;" id="atxnd-details"></div>
+      <!-- Razorpay info -->
+      <div id="atxnd-razorpay" style="padding:12px 14px;background:#f0f7ff;border:1px solid rgba(0,90,200,0.15);border-radius:var(--radius-sm);margin-bottom:16px;font-size:12.5px;"></div>
+      <!-- Status history -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--slate-light);font-weight:600;margin-bottom:10px;">Status History</div>
+        <div id="atxnd-history" style="display:flex;flex-direction:column;gap:0;"></div>
+      </div>
+      <!-- Rejection form (shown only for pending) -->
+      <div id="atxnd-reject-form" style="display:none;">
+        <div class="form-group" style="margin-bottom:8px;">
+          <label class="form-label">Rejection Reason</label>
+          <select class="form-select" id="atxnd-reject-reason" style="margin-bottom:8px;"><option>Select a reason…</option><option>Duplicate transaction detected</option><option>Payment verification failed</option><option>KYC not approved</option><option>Property no longer available</option><option>Other</option></select>
+          <textarea class="form-input" id="atxnd-reject-notes" placeholder="Additional notes for investor…" rows="2" style="resize:vertical;"></textarea>
+        </div>
+        <div style="padding:10px 12px;background:var(--red-bg);border-radius:var(--radius-sm);font-size:12px;color:var(--red);">⚠️ Rejecting will flag the payment for refund via Razorpay Refund API.</div>
+      </div>
+    </div>
+    <div class="modal-footer" id="atxnd-footer"></div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div id="toastEl" class="toast"><span id="toast-msg"></span></div>
 
 <!-- ═══ SCRIPTS ═══ -->
 <script>
-// Screen navigation
+// ─────────────────────────────────────────────
+// UTILITIES
+// ─────────────────────────────────────────────
+const fmt = n => '₹' + Math.abs(n).toLocaleString('en-IN');
+const fmtDate = iso => new Date(iso).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'2-digit'});
+const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+let _txnSeq = 100;
+const newTxnId = () => 'TXN-' + String(++_txnSeq).padStart(4,'0');
+
+// ─────────────────────────────────────────────
+// SEED DATA  (mirrors BRD Section 8 schema)
+// ─────────────────────────────────────────────
+const SEED = {
+  properties: [
+    { id:'prop-1', name:'Prestige Koramangala', location:'Koramangala, Bengaluru', type:'Commercial',
+      totalUnits:1000, unitPrice:2287, minUnits:10, yield:9.2, totalValue:128000000,
+      subscribedUnits:880, status:'Open', emoji:'🏢', gradient:'linear-gradient(135deg,#1B3057,#2A4A7A)' },
+    { id:'prop-2', name:'Lodha Primero BKC', location:'Bandra Kurla Complex, Mumbai', type:'Residential',
+      totalUnits:3000, unitPrice:3950, minUnits:5, yield:7.8, totalValue:245000000,
+      subscribedUnits:900, status:'Open', emoji:'🏙️', gradient:'linear-gradient(135deg,#2D4A2A,#3A6B36)' },
+    { id:'prop-3', name:'DLF CyberHub Phase 3', location:'Sector 24, Gurugram', type:'Commercial',
+      totalUnits:2000, unitPrice:4700, minUnits:20, yield:10.1, totalValue:188000000,
+      subscribedUnits:1580, status:'Open', emoji:'🏗️', gradient:'linear-gradient(135deg,#4A2A1A,#7A3A1B)' },
+  ],
+  investors: [
+    { id:'inv-rahul', name:'Rahul Mehta', email:'rahul.mehta@gmail.com', initials:'RM', kyc:'Approved', type:'Resident Indian' },
+    { id:'inv-ananya', name:'Ananya Krishnan', email:'ananya.k@gmail.com', initials:'AK', kyc:'Approved', type:'Resident Indian' },
+    { id:'inv-vikram', name:'Vikram Shetty', email:'vikram.shetty@corp.in', initials:'VS', kyc:'Approved', type:'Resident Indian' },
+    { id:'inv-meera', name:'Meera Iyer', email:'meera.iyer@gmail.com', initials:'MI', kyc:'Approved', type:'NRI' },
+  ],
+  ownerships: [
+    { investorId:'inv-rahul', propertyId:'prop-1', units:120, acquisitionPrice:2000, acquisitionDate:'2026-04-14' },
+    { investorId:'inv-rahul', propertyId:'prop-2', units:200, acquisitionPrice:3500, acquisitionDate:'2026-01-15' },
+    { investorId:'inv-rahul', propertyId:'prop-3', units:80,  acquisitionPrice:4200, acquisitionDate:'2026-05-02' },
+  ],
+  transactions: [
+    { id:'TXN-0091', investorId:'inv-rahul', propertyId:'prop-2', type:'Distribution', units:null,
+      gross:18400, fee:920, net:17480, status:'Completed', razorpayId:null, period:'Q1 2026',
+      date:'2026-05-20', notes:'Q1 2026 rental income', perUnit:92,
+      history:[{status:'Initiated',date:'2026-05-20',by:'System'},{status:'Completed',date:'2026-05-20',by:'System'}] },
+    { id:'TXN-0078', investorId:'inv-rahul', propertyId:'prop-3', type:'Investment', units:80,
+      gross:336000, fee:5040, net:341040, status:'Completed', razorpayId:'pay_PP8X1Z',
+      date:'2026-05-02', notes:null,
+      history:[{status:'Initiated',date:'2026-05-02',by:'Rahul Mehta'},{status:'Payment Confirmed',date:'2026-05-02',by:'Razorpay'},{status:'Admin Pending',date:'2026-05-02',by:'System'},{status:'Completed',date:'2026-05-02',by:'Priya Nair'}] },
+    { id:'TXN-0061', investorId:'inv-rahul', propertyId:'prop-1', type:'Investment', units:120,
+      gross:240000, fee:3600, net:243600, status:'Completed', razorpayId:'pay_PK3R9A',
+      date:'2026-04-14', notes:null,
+      history:[{status:'Initiated',date:'2026-04-14',by:'Rahul Mehta'},{status:'Payment Confirmed',date:'2026-04-14',by:'Razorpay'},{status:'Admin Pending',date:'2026-04-14',by:'System'},{status:'Completed',date:'2026-04-14',by:'Priya Nair'}] },
+    { id:'TXN-0043', investorId:'inv-rahul', propertyId:'prop-2', type:'Fee', units:null,
+      gross:0, fee:14000, net:-14000, status:'Completed', razorpayId:null,
+      date:'2026-03-01', notes:'Annual management fee Q1 2026',
+      history:[{status:'Initiated',date:'2026-03-01',by:'System'},{status:'Completed',date:'2026-03-01',by:'Priya Nair'}] },
+    { id:'TXN-0011', investorId:'inv-rahul', propertyId:'prop-2', type:'Investment', units:200,
+      gross:700000, fee:10500, net:710500, status:'Completed', razorpayId:'pay_PB2M4Q',
+      date:'2026-01-15', notes:null,
+      history:[{status:'Initiated',date:'2026-01-15',by:'Rahul Mehta'},{status:'Payment Confirmed',date:'2026-01-15',by:'Razorpay'},{status:'Admin Pending',date:'2026-01-15',by:'System'},{status:'Completed',date:'2026-01-15',by:'Priya Nair'}] },
+    { id:'TXN-0987', investorId:'inv-rahul', propertyId:'prop-3', type:'Refund', units:null,
+      gross:42000, fee:0, net:42000, status:'Processing', razorpayId:'rfnd_PA1X9Z',
+      date:'2025-12-20', notes:'Overpayment refund',
+      history:[{status:'Initiated',date:'2025-12-20',by:'System'},{status:'Processing',date:'2025-12-20',by:'Razorpay'}] },
+    // Pending investments from other investors (admin queue)
+    { id:'TXN-0094', investorId:'inv-ananya', propertyId:'prop-1', type:'Investment', units:20,
+      gross:45740, fee:686, net:46426, status:'Admin Pending', razorpayId:'pay_PQ7R3X',
+      date:'2026-05-22', notes:null,
+      history:[{status:'Initiated',date:'2026-05-22',by:'Ananya Krishnan'},{status:'Payment Confirmed',date:'2026-05-22',by:'Razorpay'},{status:'Admin Pending',date:'2026-05-22',by:'System'}] },
+    { id:'TXN-0093', investorId:'inv-vikram', propertyId:'prop-2', type:'Investment', units:50,
+      gross:197500, fee:2963, net:200463, status:'Admin Pending', razorpayId:'pay_PQ6S2W',
+      date:'2026-05-22', notes:null,
+      history:[{status:'Initiated',date:'2026-05-22',by:'Vikram Shetty'},{status:'Payment Confirmed',date:'2026-05-22',by:'Razorpay'},{status:'Admin Pending',date:'2026-05-22',by:'System'}] },
+    { id:'TXN-0092', investorId:'inv-meera', propertyId:'prop-3', type:'Investment', units:20,
+      gross:94000, fee:1410, net:95410, status:'Admin Pending', razorpayId:'pay_PP9T1V',
+      date:'2026-05-21', notes:null,
+      history:[{status:'Initiated',date:'2026-05-21',by:'Meera Iyer'},{status:'Payment Confirmed',date:'2026-05-21',by:'Razorpay'},{status:'Admin Pending',date:'2026-05-21',by:'System'}] },
+  ],
+  distributions: [
+    { id:'DIST-001', propertyId:'prop-2', period:'Q1 2026', perUnit:92, feePct:5,
+      grossTotal:82800, feeTotal:4140, netTotal:78660, investorCount:4,
+      date:'2026-05-20', status:'Completed' },
+  ],
+  pendingFees: [
+    { id:'FEE-001', investorId:'inv-rahul', portfolioValue:5840000, rate:2, amount:116800, period:'May 2026', status:'Pending' },
+    { id:'FEE-002', investorId:'inv-ananya', portfolioValue:2870000, rate:2, amount:57400, period:'May 2026', status:'Pending' },
+  ],
+};
+
+// ─────────────────────────────────────────────
+// DB  — localStorage persistence layer
+// ─────────────────────────────────────────────
+const DB = {
+  _key: 'propitz_db',
+  load() {
+    try {
+      const raw = localStorage.getItem(this._key);
+      if (raw) { const d = JSON.parse(raw); if (d.version === 2) return d; }
+    } catch(e) {}
+    return null;
+  },
+  save(data) {
+    data.version = 2;
+    localStorage.setItem(this._key, JSON.stringify(data));
+  },
+  reset() { localStorage.removeItem(this._key); location.reload(); },
+  init() {
+    let d = this.load();
+    if (!d) { d = { ...SEED, version:2 }; this.save(d); }
+    return d;
+  },
+};
+
+let db = DB.init();
+
+const getProperty = id => db.properties.find(p => p.id === id);
+const getInvestor = id => db.investors.find(i => i.id === id);
+const getRahulOwnerships = () => db.ownerships.filter(o => o.investorId === 'inv-rahul');
+
+// ─────────────────────────────────────────────
+// COMPUTED PORTFOLIO (Rahul)
+// ─────────────────────────────────────────────
+function computePortfolio() {
+  let totalValue = 0, totalCost = 0, distribYTD = 0;
+  const rows = getRahulOwnerships().map(o => {
+    const p = getProperty(o.propertyId);
+    const currValue = o.units * p.unitPrice;
+    const cost = o.units * o.acquisitionPrice;
+    totalValue += currValue; totalCost += cost;
+    return { ...o, prop: p, currValue, cost, pnl: currValue - cost, pnlPct: ((currValue-cost)/cost*100).toFixed(1) };
+  });
+  db.transactions.filter(t => t.investorId==='inv-rahul' && t.type==='Distribution' && t.status==='Completed')
+    .forEach(t => distribYTD += t.net);
+  return { rows, totalValue, totalCost, pnl: totalValue-totalCost, pnlPct: ((totalValue-totalCost)/totalCost*100).toFixed(1), distribYTD };
+}
+
+// ─────────────────────────────────────────────
+// RENDER: INVESTOR DASHBOARD
+// ─────────────────────────────────────────────
+function renderDashboard() {
+  const { rows, totalValue, totalCost, pnl, pnlPct, distribYTD } = computePortfolio();
+  set('kpi-total-value', fmt(totalValue));
+  set('kpi-total-invested', fmt(totalCost));
+  set('kpi-pnl', (pnl >= 0 ? '+' : '−') + fmt(pnl));
+  set('kpi-pnl-pct', (pnl >= 0 ? '+' : '−') + pnlPct + '% overall return');
+  set('kpi-distrib', fmt(distribYTD));
+
+  const tbody = document.getElementById('dashboard-portfolio-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = rows.map(r => `
+    <tr onclick="go('s-prop-detail')">
+      <td><div style="font-weight:500;">${r.prop.name}</div><div class="muted" style="font-size:11.5px;">${r.prop.location} · ${r.prop.type}</div></td>
+      <td class="num">${r.units}</td>
+      <td class="muted">${fmt(r.acquisitionPrice)}</td>
+      <td class="num">${fmt(r.currValue)}</td>
+      <td class="num-pos">+${fmt(r.pnl)} <span style="font-size:11px;">(+${r.pnlPct}%)</span></td>
+    </tr>`).join('');
+
+  const recentTxns = db.transactions.filter(t => t.investorId==='inv-rahul').slice(0,5);
+  const rtbody = document.getElementById('dashboard-recent-tbody');
+  if (rtbody) rtbody.innerHTML = recentTxns.map(t => {
+    const p = t.propertyId ? getProperty(t.propertyId) : null;
+    return `<tr>
+      <td class="muted">${fmtDate(t.date)}</td>
+      <td>${typeBadge(t.type)}</td>
+      <td>${p ? p.name.split(' ').slice(0,2).join(' ') : '—'}</td>
+      <td class="muted">${t.units ?? '—'}</td>
+      <td class="${t.net >= 0 ? 'num-pos' : 'num-neg'}">${t.net >= 0 ? '+' : '−'}${fmt(t.net)}</td>
+      <td>${statusBadge(t.status)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+// RENDER: INVESTOR TRANSACTIONS
+// ─────────────────────────────────────────────
+function renderInvestorTxns() {
+  const typeF   = document.getElementById('txn-filter-type')?.value   || '';
+  const propF   = document.getElementById('txn-filter-prop')?.value   || '';
+  const statusF = document.getElementById('txn-filter-status')?.value || '';
+
+  let txns = db.transactions.filter(t => t.investorId === 'inv-rahul');
+  if (typeF)   txns = txns.filter(t => t.type === typeF);
+  if (propF)   txns = txns.filter(t => t.propertyId === propF);
+  if (statusF) txns = txns.filter(t => t.status === statusF);
+
+  const tbody = document.getElementById('investor-txn-tbody');
+  if (!tbody) return;
+  if (!txns.length) { tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--slate-light);">No transactions match your filters.</td></tr>`; return; }
+
+  tbody.innerHTML = txns.map(t => {
+    const p = t.propertyId ? getProperty(t.propertyId) : null;
+    const propName = p ? p.name.split(' ').slice(0,2).join(' ') : '—';
+    const netCls = t.net >= 0 ? 'num-pos' : 'num-neg';
+    const netStr = (t.net >= 0 ? '+' : '−') + fmt(t.net);
+    return `<tr onclick="openTxnDetail('${t.id}')" style="cursor:pointer;">
+      <td class="muted" style="font-size:12px;">${t.id}</td>
+      <td class="muted">${fmtDate(t.date)}</td>
+      <td>${typeBadge(t.type)}</td>
+      <td>${propName}</td>
+      <td class="${t.units ? 'num' : 'muted'}">${t.units ?? '—'}</td>
+      <td class="${t.gross ? 'num' : 'muted'}">${t.gross ? fmt(t.gross) : '—'}</td>
+      <td class="muted">${t.fee ? fmt(t.fee) : '—'}</td>
+      <td class="${netCls}">${netStr}</td>
+      <td>${statusBadge(t.status)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+// RENDER: ADMIN TRANSACTION QUEUE
+// ─────────────────────────────────────────────
+function renderAdminTxns() {
+  const pending = db.transactions.filter(t => t.status === 'Admin Pending');
+
+  // update tab badge
+  const badge = document.getElementById('atab-pending-count');
+  if (badge) badge.textContent = pending.length;
+
+  // pending tbody
+  const ptbody = document.getElementById('admin-pending-tbody');
+  if (ptbody) {
+    if (!pending.length) {
+      ptbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--slate-light);">No pending transactions. ✓</td></tr>`;
+    } else {
+      ptbody.innerHTML = pending.map(t => {
+        const p = getProperty(t.propertyId);
+        const inv = getInvestor(t.investorId);
+        return `<tr>
+          <td><div style="font-weight:500;">${inv.name}</div><div class="muted" style="font-size:11px;">${t.id} · ${fmtDate(t.date)}</div></td>
+          <td>${p.name.split(' ').slice(0,2).join(' ')}</td>
+          <td class="num">${t.units ?? '—'}</td>
+          <td class="num">${fmt(t.gross)}</td>
+          <td class="muted" style="font-size:11.5px;">${t.razorpayId ?? '—'}</td>
+          <td><div style="display:flex;gap:6px;">
+            <button class="btn btn-sm btn-success" onclick="approveTxn('${t.id}')">✓ Approve</button>
+            <button class="btn btn-sm btn-danger" onclick="openAdminTxnDetail('${t.id}',true)">✗ Reject</button>
+            <button class="btn btn-sm btn-outline" onclick="openAdminTxnDetail('${t.id}',false)">Detail</button>
+          </div></td>
+        </tr>`;
+      }).join('');
+    }
+  }
+
+  // all-transactions tbody
+  const atbody = document.getElementById('admin-all-tbody');
+  if (atbody) {
+    atbody.innerHTML = db.transactions.map(t => {
+      const p = t.propertyId ? getProperty(t.propertyId) : null;
+      const inv = getInvestor(t.investorId);
+      return `<tr onclick="openAdminTxnDetail('${t.id}',false)" style="cursor:pointer;">
+        <td class="muted" style="font-size:11.5px;">${t.id}</td>
+        <td class="muted">${fmtDate(t.date)}</td>
+        <td>${inv.name}</td>
+        <td>${typeBadge(t.type)}</td>
+        <td>${p ? p.name.split(' ').slice(0,2).join(' ') : '—'}</td>
+        <td class="${t.net>=0?'num-pos':'num-neg'}">${t.net>=0?'+':'−'}${fmt(t.net)}</td>
+        <td>${statusBadge(t.status)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // distributions tbody
+  const dtbody = document.getElementById('admin-dist-tbody');
+  if (dtbody) {
+    dtbody.innerHTML = db.distributions.map(d => {
+      const p = getProperty(d.propertyId);
+      return `<tr>
+        <td class="muted" style="font-size:11.5px;">${d.id}</td>
+        <td class="muted">${fmtDate(d.date)}</td>
+        <td style="font-weight:500;">${p.name.split(' ').slice(0,2).join(' ')}</td>
+        <td class="muted">${d.period}</td>
+        <td class="num">${fmt(d.perUnit)}</td>
+        <td class="num-pos">+${fmt(d.netTotal)}</td>
+        <td class="num">${d.investorCount}</td>
+        <td>${statusBadge(d.status)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // fees tbody
+  const ftbody = document.getElementById('admin-fees-tbody');
+  if (ftbody) {
+    ftbody.innerHTML = db.pendingFees.map(f => {
+      const inv = getInvestor(f.investorId);
+      return `<tr>
+        <td style="font-weight:500;">${inv.name}</td>
+        <td class="num">${fmt(f.portfolioValue)}</td>
+        <td class="muted">${f.rate}% p.a.</td>
+        <td class="num-neg">−${fmt(f.amount)}</td>
+        <td class="muted">${f.period}</td>
+        <td>${statusBadge(f.status)}</td>
+        <td><div style="display:flex;gap:6px;">
+          <button class="btn btn-sm btn-success" onclick="approveFee('${f.id}')">✓ Deduct</button>
+          <button class="btn btn-sm btn-outline" onclick="toast('Fee deferred to next cycle')">Defer</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // also refresh admin dashboard pending counts
+  renderAdminDashboard();
+}
+
+// ─────────────────────────────────────────────
+// RENDER: ADMIN DASHBOARD KPIs
+// ─────────────────────────────────────────────
+function renderAdminDashboard() {
+  const pending = db.transactions.filter(t => t.status==='Admin Pending').length;
+  // update sidebar badges
+  document.querySelectorAll('.sidebar-item').forEach(item => {
+    if (item.textContent.includes('Transactions')) {
+      const sp = item.querySelector('span[style*="background:var(--gold)"]');
+      if (sp) sp.textContent = pending;
+    }
+  });
+}
+
+// ─────────────────────────────────────────────
+// TRANSACTION ACTIONS
+// ─────────────────────────────────────────────
+function approveTxn(id) {
+  const t = db.transactions.find(t => t.id === id);
+  if (!t) return;
+  t.status = 'Completed';
+  t.history.push({ status:'Completed', date: new Date().toISOString().slice(0,10), by:'Priya Nair' });
+  // allocate units if investment
+  if (t.type === 'Investment') {
+    const existing = db.ownerships.find(o => o.investorId===t.investorId && o.propertyId===t.propertyId);
+    if (existing) { existing.units += t.units; }
+    else { db.ownerships.push({ investorId:t.investorId, propertyId:t.propertyId, units:t.units, acquisitionPrice: Math.round(t.gross/t.units), acquisitionDate: t.date }); }
+    const prop = getProperty(t.propertyId);
+    if (prop) prop.subscribedUnits = Math.min(prop.totalUnits, prop.subscribedUnits + t.units);
+  }
+  DB.save(db);
+  renderAdminTxns();
+  renderDashboard();
+  toast('✓ Transaction approved · Units allocated · Ownership certificate generated · Investor notified');
+}
+
+function rejectTxn(id) {
+  const reason = document.getElementById('atxnd-reject-reason')?.value || '';
+  if (!reason || reason.startsWith('Select')) { toast('⚠ Please select a rejection reason'); return; }
+  const t = db.transactions.find(t => t.id === id);
+  if (!t) return;
+  t.status = 'Rejected';
+  t.history.push({ status:'Rejected', date: new Date().toISOString().slice(0,10), by:'Priya Nair' });
+  DB.save(db);
+  closeModal('m-admin-txn-detail');
+  renderAdminTxns();
+  toast('✗ Transaction rejected · Refund initiated · Investor notified via email');
+}
+
+function approveFee(id) {
+  const f = db.pendingFees.find(f => f.id === id);
+  if (!f) return;
+  f.status = 'Completed';
+  const t = { id: newTxnId(), investorId: f.investorId, propertyId: null, type:'Fee',
+    units: null, gross: 0, fee: f.amount, net: -f.amount, status:'Completed',
+    razorpayId: null, date: new Date().toISOString().slice(0,10),
+    notes: 'Annual management fee ' + f.period,
+    history:[{status:'Initiated',date:new Date().toISOString().slice(0,10),by:'System'},{status:'Completed',date:new Date().toISOString().slice(0,10),by:'Priya Nair'}] };
+  db.transactions.unshift(t);
+  DB.save(db);
+  renderAdminTxns();
+  renderInvestorTxns();
+  toast('✓ Management fee deducted · ' + fmt(f.amount) + ' · Investor notified');
+}
+
+// ─────────────────────────────────────────────
+// TRANSACTION DETAIL MODAL (Investor)
+// ─────────────────────────────────────────────
+const TXN_STATUSES = ['Initiated','Payment Confirmed','Admin Pending','Completed'];
+const TXN_STATUSES_SIMPLE = ['Initiated','Processing','Completed'];
+
+function openTxnDetail(id) {
+  const t = db.transactions.find(t => t.id === id);
+  if (!t) return;
+  const p = t.propertyId ? getProperty(t.propertyId) : null;
+
+  set('txnd-title', t.id + ' — ' + t.type);
+
+  // Timeline
+  const statuses = t.type === 'Investment' ? TXN_STATUSES : TXN_STATUSES_SIMPLE;
+  const currentIdx = Math.max(...t.history.map(h => statuses.indexOf(h.status)).filter(i => i >= 0));
+  const timelineEl = document.getElementById('txnd-timeline');
+  timelineEl.innerHTML = t.history.map((h, i) => `
+    <div style="display:flex;gap:12px;padding-bottom:${i<t.history.length-1?'0':'0'};">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div style="width:28px;height:28px;border-radius:50%;background:${statusColor(h.status)};display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:700;flex-shrink:0;">${i+1}</div>
+        ${i<t.history.length-1?`<div style="width:2px;flex:1;min-height:16px;background:var(--border-strong);margin:3px 0;"></div>`:''}
+      </div>
+      <div style="padding-top:4px;padding-bottom:${i<t.history.length-1?'12px':'0'};">
+        <div style="font-size:13px;font-weight:600;">${h.status}</div>
+        <div style="font-size:11.5px;color:var(--slate-light);">${fmtDate(h.date)} · ${h.by}</div>
+      </div>
+    </div>`).join('');
+
+  // Details grid
+  const details = [
+    ['Property', p ? p.name : '—'],
+    ['Type', t.type],
+    ['Date', fmtDate(t.date)],
+    ['Units', t.units ?? '—'],
+    ['Razorpay ID', t.razorpayId ?? 'N/A'],
+    ['Status', t.status],
+  ];
+  document.getElementById('txnd-details').innerHTML = details.map(([k,v]) => `
+    <div style="background:var(--surface-2);border-radius:var(--radius-sm);padding:10px 12px;">
+      <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--slate-light);margin-bottom:3px;">${k}</div>
+      <div style="font-size:13.5px;font-weight:500;">${v}</div>
+    </div>`).join('');
+
+  // Fee breakdown
+  document.getElementById('txnd-fees').innerHTML = `
+    <div style="display:flex;justify-content:space-between;"><span class="muted">Gross amount</span><span>${t.gross ? fmt(t.gross) : '—'}</span></div>
+    <div style="display:flex;justify-content:space-between;"><span class="muted">Platform fee</span><span style="color:var(--red);">${t.fee ? '−'+fmt(t.fee) : '—'}</span></div>
+    <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:8px;margin-top:4px;font-weight:600;">
+      <span>Net ${t.net >= 0 ? 'received' : 'charged'}</span>
+      <span class="${t.net>=0?'num-pos':'num-neg'}">${t.net>=0?'+':'−'}${fmt(t.net)}</span>
+    </div>`;
+
+  // Linked doc
+  const docSection = document.getElementById('txnd-doc-section');
+  if (t.type === 'Investment' && t.status === 'Completed') {
+    docSection.style.display = 'flex';
+    set('txnd-doc-label', '📄 Ownership Certificate — ' + (p ? p.name.split(' ').slice(0,2).join(' ') : ''));
+  } else { docSection.style.display = 'none'; }
+
+  openModal('m-txn-detail');
+}
+
+// ─────────────────────────────────────────────
+// ADMIN TRANSACTION DETAIL MODAL
+// ─────────────────────────────────────────────
+let _currentAdminTxnId = null;
+
+function openAdminTxnDetail(id, showRejectForm) {
+  _currentAdminTxnId = id;
+  const t = db.transactions.find(t => t.id === id);
+  if (!t) return;
+  const p = t.propertyId ? getProperty(t.propertyId) : null;
+  const inv = getInvestor(t.investorId);
+
+  set('atxnd-title', t.id + ' — ' + t.type);
+
+  // Investor info
+  document.getElementById('atxnd-investor').innerHTML = `
+    <div style="width:44px;height:44px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--navy);">${inv.initials}</div>
+    <div>
+      <div style="font-weight:600;font-size:15px;">${inv.name}</div>
+      <div class="muted" style="font-size:12.5px;">${inv.email}</div>
+      <div style="margin-top:4px;">${statusBadge(inv.kyc)} <span class="badge badge-navy">${inv.type}</span></div>
+    </div>`;
+
+  // Details grid
+  const details = [
+    ['Property', p ? p.name.split(' ').slice(0,2).join(' ') : '—'],
+    ['Units', t.units ?? '—'],
+    ['Gross', t.gross ? fmt(t.gross) : '—'],
+    ['Platform Fee', t.fee ? fmt(t.fee) : '—'],
+    ['Net', (t.net>=0?'+':'−')+fmt(t.net)],
+    ['Status', t.status],
+  ];
+  document.getElementById('atxnd-details').innerHTML = details.map(([k,v]) => `
+    <div style="background:var(--surface-2);border-radius:var(--radius-sm);padding:10px 12px;">
+      <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--slate-light);margin-bottom:3px;">${k}</div>
+      <div style="font-size:13px;font-weight:500;">${v}</div>
+    </div>`).join('');
+
+  // Razorpay
+  document.getElementById('atxnd-razorpay').innerHTML = t.razorpayId
+    ? `<span style="font-weight:600;">Razorpay ID:</span> <code style="background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:4px;">${t.razorpayId}</code>
+       <span style="margin-left:16px;font-weight:600;">Event:</span> payment.captured
+       <span style="margin-left:16px;font-weight:600;">Verified:</span> <span style="color:var(--green);">✓ HMAC-SHA256</span>`
+    : `<span style="color:var(--slate-light);">No payment gateway record (${t.type})</span>`;
+
+  // History
+  document.getElementById('atxnd-history').innerHTML = t.history.map((h, i) => `
+    <div style="display:flex;gap:12px;${i<t.history.length-1?'padding-bottom:0;':''}">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div style="width:24px;height:24px;border-radius:50%;background:${statusColor(h.status)};flex-shrink:0;"></div>
+        ${i<t.history.length-1?`<div style="width:2px;flex:1;min-height:14px;background:var(--border-strong);margin:3px 0;"></div>`:''}
+      </div>
+      <div style="padding-top:3px;padding-bottom:${i<t.history.length-1?'10px':'0'};">
+        <span style="font-size:13px;font-weight:600;">${h.status}</span>
+        <span style="font-size:11.5px;color:var(--slate-light);margin-left:10px;">${fmtDate(h.date)} · ${h.by}</span>
+      </div>
+    </div>`).join('');
+
+  // Reject form
+  const rf = document.getElementById('atxnd-reject-form');
+  rf.style.display = (showRejectForm && t.status==='Admin Pending') ? 'block' : 'none';
+
+  // Footer buttons
+  const footer = document.getElementById('atxnd-footer');
+  if (t.status === 'Admin Pending') {
+    footer.innerHTML = `
+      <button class="btn btn-outline" onclick="closeModal('m-admin-txn-detail')">Cancel</button>
+      <button class="btn btn-danger" onclick="rejectTxn('${t.id}')">✗ Confirm Rejection</button>
+      <button class="btn btn-success" onclick="approveTxn('${t.id}');closeModal('m-admin-txn-detail')">✓ Approve</button>`;
+  } else {
+    footer.innerHTML = `<button class="btn btn-outline" onclick="closeModal('m-admin-txn-detail')">Close</button>`;
+    if (t.type==='Investment' && t.status==='Completed') {
+      footer.innerHTML = `<button class="btn btn-outline" onclick="toast('📄 Certificate downloaded')">⬇ Certificate</button>
+        <button class="btn btn-outline" onclick="closeModal('m-admin-txn-detail')">Close</button>`;
+    }
+  }
+
+  openModal('m-admin-txn-detail');
+}
+
+// ─────────────────────────────────────────────
+// RESALE REQUEST
+// ─────────────────────────────────────────────
+function openResaleModal() {
+  const holdings = getRahulOwnerships();
+  const sel = document.getElementById('resale-holding');
+  sel.innerHTML = '<option value="">Choose property…</option>' +
+    holdings.map(o => {
+      const p = getProperty(o.propertyId);
+      return `<option value="${o.propertyId}" data-units="${o.units}" data-price="${p.unitPrice}">${p.name} (${o.units} units)</option>`;
+    }).join('');
+  document.getElementById('resale-units').value = '';
+  document.getElementById('resale-price').value = '';
+  document.getElementById('resale-summary').style.display = 'none';
+  set('resale-max-units', '—');
+  set('resale-current-price', '—');
+  openModal('m-resale');
+}
+
+function updateResaleMax() {
+  const sel = document.getElementById('resale-holding');
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt || !opt.dataset.units) { set('resale-max-units','—'); set('resale-current-price','—'); return; }
+  set('resale-max-units', opt.dataset.units);
+  set('resale-current-price', fmt(parseInt(opt.dataset.price)));
+  document.getElementById('resale-units').max = opt.dataset.units;
+  calcResale();
+}
+
+function calcResale() {
+  const sel = document.getElementById('resale-holding');
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt || !opt.dataset.price) return;
+  const units = parseInt(document.getElementById('resale-units').value) || 0;
+  const priceInput = parseInt(document.getElementById('resale-price').value) || parseInt(opt.dataset.price);
+  const summary = document.getElementById('resale-summary');
+  if (!units) { summary.style.display='none'; return; }
+  const value = units * priceInput;
+  const exitFee = Math.round(value * 0.02);
+  summary.style.display = 'block';
+  set('resale-s-units', units + ' units');
+  set('resale-s-value', fmt(value));
+  set('resale-s-fee', '−' + fmt(exitFee));
+}
+
+function submitResale() {
+  const sel = document.getElementById('resale-holding');
+  const opt = sel.options[sel.selectedIndex];
+  const units = parseInt(document.getElementById('resale-units').value) || 0;
+  if (!opt || !opt.value) { toast('⚠ Please select a property'); return; }
+  if (!units || units < 1) { toast('⚠ Enter number of units to sell'); return; }
+  if (units > parseInt(opt.dataset.units)) { toast('⚠ Cannot sell more units than you hold'); return; }
+
+  const priceInput = parseInt(document.getElementById('resale-price').value) || parseInt(opt.dataset.price);
+  const gross = units * priceInput;
+  const exitFee = Math.round(gross * 0.02);
+
+  const t = {
+    id: newTxnId(), investorId:'inv-rahul', propertyId: opt.value, type:'Resale',
+    units, gross, fee: exitFee, net: gross - exitFee, status:'Pending',
+    razorpayId: null, date: new Date().toISOString().slice(0,10), notes:'Resale request',
+    history:[{status:'Initiated', date: new Date().toISOString().slice(0,10), by:'Rahul Mehta'}]
+  };
+  db.transactions.unshift(t);
+  DB.save(db);
+  closeModal('m-resale');
+  renderInvestorTxns();
+  toast('✓ Resale request submitted · Admin will contact you within 2 business days');
+}
+
+// ─────────────────────────────────────────────
+// DISTRIBUTION FLOW
+// ─────────────────────────────────────────────
+function calcDistribution() {
+  const propId = document.getElementById('dist-property')?.value;
+  const perUnit = parseFloat(document.getElementById('dist-per-unit')?.value) || 0;
+  const feePct  = parseFloat(document.getElementById('dist-fee-pct')?.value) || 5;
+
+  const previewCard = document.getElementById('dist-preview-card');
+  const confirmBtn  = document.getElementById('dist-confirm-btn');
+  if (!propId || !perUnit) {
+    set('dist-s-prop','—'); set('dist-s-holders','—'); set('dist-s-units','—');
+    set('dist-s-gross-unit','—'); set('dist-s-gross','—'); set('dist-s-fee','—'); set('dist-s-net','—');
+    if (previewCard) previewCard.style.display='none';
+    if (confirmBtn) confirmBtn.disabled=true;
+    return;
+  }
+
+  const prop = getProperty(propId);
+  const holders = db.ownerships.filter(o => o.propertyId === propId);
+  const totalUnits = holders.reduce((s,o) => s + o.units, 0);
+  const grossTotal = totalUnits * perUnit;
+  const feeTotal   = Math.round(grossTotal * feePct / 100);
+  const netTotal   = grossTotal - feeTotal;
+
+  set('dist-s-prop', prop.name.split(' ').slice(0,2).join(' '));
+  set('dist-s-holders', holders.length + ' investors');
+  set('dist-s-units', totalUnits.toLocaleString('en-IN') + ' units');
+  set('dist-s-gross-unit', fmt(perUnit));
+  set('dist-s-gross', fmt(grossTotal));
+  set('dist-s-fee', '−' + fmt(feeTotal) + ' (' + feePct + '%)');
+  set('dist-s-net', fmt(netTotal));
+
+  // Preview table
+  if (previewCard) previewCard.style.display='block';
+  set('dist-preview-count', holders.length + ' investors');
+  const tbody = document.getElementById('dist-preview-tbody');
+  if (tbody) {
+    tbody.innerHTML = holders.map(o => {
+      const inv = getInvestor(o.investorId);
+      const gross = o.units * perUnit;
+      const fee   = Math.round(gross * feePct / 100);
+      const net   = gross - fee;
+      return `<tr>
+        <td style="font-weight:500;">${inv.name}</td>
+        <td class="num">${o.units}</td>
+        <td class="num">${fmt(gross)}</td>
+        <td class="muted">−${fmt(fee)}</td>
+        <td class="num-pos">+${fmt(net)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  if (confirmBtn) confirmBtn.disabled = false;
+}
+
+function confirmDistribution() {
+  const propId  = document.getElementById('dist-property').value;
+  const perUnit = parseFloat(document.getElementById('dist-per-unit').value) || 0;
+  const feePct  = parseFloat(document.getElementById('dist-fee-pct').value) || 5;
+  const period  = document.getElementById('dist-period').value;
+  const date    = document.getElementById('dist-date').value || new Date().toISOString().slice(0,10);
+  const notes   = document.getElementById('dist-notes').value || '';
+  if (!propId || !perUnit) { toast('⚠ Fill in property and amount per unit'); return; }
+
+  const prop    = getProperty(propId);
+  const holders = db.ownerships.filter(o => o.propertyId === propId);
+  const totalUnits = holders.reduce((s,o) => s+o.units, 0);
+  const grossTotal = totalUnits * perUnit;
+  const feeTotal   = Math.round(grossTotal * feePct / 100);
+  const netTotal   = grossTotal - feeTotal;
+
+  // Create a distribution record
+  const distId = 'DIST-' + String(db.distributions.length + 1).padStart(3,'0');
+  db.distributions.unshift({ id:distId, propertyId:propId, period, perUnit, feePct,
+    grossTotal, feeTotal, netTotal, investorCount:holders.length, date, status:'Completed' });
+
+  // Create individual transactions for each holder
+  holders.forEach(o => {
+    const gross = o.units * perUnit;
+    const fee   = Math.round(gross * feePct / 100);
+    const net   = gross - fee;
+    db.transactions.unshift({
+      id: newTxnId(), investorId: o.investorId, propertyId: propId, type:'Distribution',
+      units: null, gross, fee, net, status:'Completed', razorpayId:null,
+      date, period, notes: notes || (period + ' rental distribution — ' + prop.name),
+      history:[{status:'Initiated',date,by:'Priya Nair'},{status:'Completed',date,by:'System'}]
+    });
+  });
+
+  DB.save(db);
+  renderAdminTxns();
+  renderInvestorTxns();
+  renderDashboard();
+  toast('✓ Distribution of ' + fmt(netTotal) + ' initiated · ' + holders.length + ' investors notified');
+  go('s-admin-txn');
+}
+
+// ─────────────────────────────────────────────
+// ADMIN TXN TABS
+// ─────────────────────────────────────────────
+function switchAdminTxnTab(tab) {
+  ['pending','all','distribution','fees'].forEach(t => {
+    document.getElementById('atab-' + t).classList.toggle('active', t === tab);
+    const panel = document.getElementById('atab-panel-' + t);
+    if (panel) panel.style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+function exportAdminTxnCSV() {
+  const rows = [['Ref','Date','Investor','Type','Property','Gross','Fee','Net','Status']];
+  db.transactions.forEach(t => {
+    const inv = getInvestor(t.investorId);
+    const p   = t.propertyId ? getProperty(t.propertyId) : null;
+    rows.push([t.id, t.date, inv.name, t.type, p?p.name:'—', t.gross||0, t.fee||0, t.net||0, t.status]);
+  });
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'propitz_transactions.csv';
+  a.click();
+  toast('📊 CSV exported (' + db.transactions.length + ' transactions)');
+}
+
+// ─────────────────────────────────────────────
+// BADGE / COLOR HELPERS
+// ─────────────────────────────────────────────
+function typeBadge(type) {
+  const map = { Investment:'badge-navy', Distribution:'badge-green', Fee:'badge-amber', Resale:'badge-gold', Refund:'badge-red' };
+  const icon = { Investment:'📦', Distribution:'💰', Fee:'📋', Resale:'🔄', Refund:'↩' };
+  return `<span class="badge ${map[type]||'badge-navy'}">${icon[type]||''} ${type}</span>`;
+}
+function statusBadge(status) {
+  const map = { Completed:'badge-green', 'Admin Pending':'badge-amber', Pending:'badge-amber',
+    Processing:'badge-amber', Rejected:'badge-red', Approved:'badge-green',
+    'Payment Confirmed':'badge-navy', Initiated:'badge-navy', 'Under Review':'badge-amber' };
+  return `<span class="badge ${map[status]||'badge-navy'}">${status}</span>`;
+}
+function statusColor(status) {
+  const map = { Completed:'#2D7D5A', Approved:'#2D7D5A', Initiated:'#718096',
+    'Payment Confirmed':'#1B3057', 'Admin Pending':'#B7791F', Pending:'#B7791F',
+    Rejected:'#C0392B', Processing:'#B7791F' };
+  return map[status] || '#718096';
+}
+
+// ─────────────────────────────────────────────
+// SCREEN NAVIGATION
+// ─────────────────────────────────────────────
 function go(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const el = document.getElementById(id);
   if (el) { el.classList.add('active'); window.scrollTo(0,0); }
+  // Re-render data-driven screens on navigate
+  if (id === 's-dashboard')       renderDashboard();
+  if (id === 's-transactions')    renderInvestorTxns();
+  if (id === 's-admin-txn')       { renderAdminTxns(); switchAdminTxnTab('pending'); }
+  if (id === 's-admin')           renderAdminTxns();
+  if (id === 's-admin-distribution') { calcDistribution(); document.getElementById('dist-preview-card').style.display='none'; }
 }
 
-// Role switcher
+// ─────────────────────────────────────────────
+// ROLE SWITCHER
+// ─────────────────────────────────────────────
 function sw(role, el) {
   document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
@@ -929,7 +1883,9 @@ function sw(role, el) {
   else { go('s-dashboard'); toast('👤 Switched to Investor view'); }
 }
 
-// Login
+// ─────────────────────────────────────────────
+// LOGIN
+// ─────────────────────────────────────────────
 let loginRole = 'investor';
 function setLoginTab(el, role) {
   document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
@@ -947,30 +1903,55 @@ function doLogin() {
   }, 700);
 }
 
-// Modals
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open')); });
+// ─────────────────────────────────────────────
+// MODALS
+// ─────────────────────────────────────────────
+function openModal(id) { document.getElementById(id)?.classList.add('open'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+});
 
-// Subscription calculator
+// ─────────────────────────────────────────────
+// SUBSCRIPTION CALCULATOR
+// ─────────────────────────────────────────────
 function calcSub(v) {
   const units = Math.max(10, parseInt(v) || 10);
   const price = 2287;
-  const sub = units * price;
-  const fee = Math.round(sub * 0.015);
+  const sub   = units * price;
+  const fee   = Math.round(sub * 0.015);
   const total = sub + fee;
-  const fmt = n => '₹' + n.toLocaleString('en-IN');
-  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
-  set('sub-subtotal', fmt(sub));
-  set('sub-fee', fmt(fee));
-  set('sub-total', fmt(total));
-  set('modal-units', units);
-  set('modal-fee', fmt(fee));
-  set('modal-total', fmt(total));
-  set('modal-pay-total', fmt(total));
+  set('sub-subtotal', fmt(sub)); set('sub-fee', fmt(fee)); set('sub-total', fmt(total));
+  set('modal-units', units); set('modal-fee', fmt(fee)); set('modal-total', fmt(total)); set('modal-pay-total', fmt(total));
 }
 
-// Toast
+function doPayment() {
+  const units = parseInt(document.getElementById('unit-input')?.value) || 10;
+  const price = 2287;
+  const gross = units * price;
+  const fee   = Math.round(gross * 0.015);
+  closeModal('m-payment');
+  const t = {
+    id: newTxnId(), investorId:'inv-rahul', propertyId:'prop-1', type:'Investment',
+    units, gross, fee, net: gross + fee, status:'Admin Pending',
+    razorpayId:'pay_' + Math.random().toString(36).slice(2,10).toUpperCase(),
+    date: new Date().toISOString().slice(0,10), notes:null,
+    history:[
+      {status:'Initiated', date:new Date().toISOString().slice(0,10), by:'Rahul Mehta'},
+      {status:'Payment Confirmed', date:new Date().toISOString().slice(0,10), by:'Razorpay'},
+      {status:'Admin Pending', date:new Date().toISOString().slice(0,10), by:'System'},
+    ]
+  };
+  db.transactions.unshift(t);
+  DB.save(db);
+  renderInvestorTxns();
+  renderAdminTxns();
+  toast('🔐 Payment captured · Transaction ' + t.id + ' pending admin approval');
+}
+
+// ─────────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────────
 let toastTimer;
 function toast(msg) {
   const el = document.getElementById('toastEl');
@@ -979,6 +1960,40 @@ function toast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
 }
+
+// ─────────────────────────────────────────────
+// INIT — wire up IDs to dynamic containers in static screens
+// ─────────────────────────────────────────────
+(function init() {
+  // Dashboard KPI ids needed by renderDashboard
+  const kpiCards = document.querySelectorAll('#s-dashboard .kpi-card');
+  if (kpiCards[0]) kpiCards[0].querySelector('.kpi-value').id = 'kpi-total-value';
+  if (kpiCards[1]) kpiCards[1].querySelector('.kpi-value').id = 'kpi-total-invested';
+  if (kpiCards[2]) kpiCards[2].querySelector('.kpi-value').id = 'kpi-pnl';
+  if (kpiCards[2]) kpiCards[2].querySelector('.kpi-delta').id = 'kpi-pnl-pct';
+  if (kpiCards[3]) kpiCards[3].querySelector('.kpi-value').id = 'kpi-distrib';
+
+  // Dashboard portfolio tbody
+  const dashPortfolioTbody = document.querySelector('#s-dashboard .data-table tbody');
+  if (dashPortfolioTbody) dashPortfolioTbody.id = 'dashboard-portfolio-tbody';
+
+  // Dashboard recent transactions tbody (second table)
+  const dashTables = document.querySelectorAll('#s-dashboard .data-table');
+  if (dashTables[1]) dashTables[1].querySelector('tbody').id = 'dashboard-recent-tbody';
+
+  // Patch payment button in property detail to use doPayment()
+  const payBtn = document.querySelector('#m-payment .btn-gold');
+  if (payBtn) payBtn.setAttribute('onclick', "doPayment()");
+
+  // Patch resale modal open button
+  const resaleOpenBtns = document.querySelectorAll('[onclick="openModal(\'m-resale\')"]');
+  resaleOpenBtns.forEach(b => b.setAttribute('onclick', "openResaleModal()"));
+
+  // Initial renders
+  renderDashboard();
+  renderInvestorTxns();
+  renderAdminTxns();
+})();
 </script>
 </body>
 </html>
