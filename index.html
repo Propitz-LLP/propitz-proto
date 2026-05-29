@@ -646,7 +646,7 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
       <div class="sidebar-section">Management</div>
       <div class="sidebar-item" onclick="go('s-admin-txn')"><div class="sidebar-icon">⏳</div>Transactions<span style="margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;padding:1px 6px;border-radius:99px;font-weight:700;">3</span></div>
       <div class="sidebar-item" onclick="go('s-admin-kyc')"><div class="sidebar-icon">👥</div>KYC Review<span style="margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;padding:1px 6px;border-radius:99px;font-weight:700;">7</span></div>
-      <div class="sidebar-item"><div class="sidebar-icon">🏢</div>Properties</div>
+      <div class="sidebar-item" onclick="go('s-admin-properties')"><div class="sidebar-icon">🏢</div>Properties</div>
       <div class="sidebar-item"><div class="sidebar-icon">💰</div>Valuations</div>
       <div class="sidebar-item"><div class="sidebar-icon">📁</div>Documents</div>
       <div class="sidebar-section">Reports</div>
@@ -939,6 +939,252 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
   </div>
 </div>
 
+<!-- ═══ SCREEN: ADMIN PROPERTIES ═══ -->
+<div id="s-admin-properties" class="screen">
+  <div class="browser-bar"><div class="browser-dots"><div class="browser-dot dot-r"></div><div class="browser-dot dot-y"></div><div class="browser-dot dot-g"></div></div><div class="browser-url">🔒 portal.propitz.com/admin/properties</div><div class="screen-nav-label">Admin · Properties</div></div>
+  <div class="role-bar"><span class="role-label">View as:</span><button class="role-btn" onclick="sw('investor',this)">👤 Investor</button><button class="role-btn active" onclick="sw('admin',this)">🛡 Admin</button><span style="margin-left:auto;color:var(--slate-light);font-size:12px;">Priya Nair (Admin)</span></div>
+  <div class="topnav" style="padding:0;"><div class="logo" style="padding:0 24px;">Propitz<span>Admin</span></div></div>
+  <div class="admin-layout">
+    <div class="sidebar">
+      <div class="sidebar-section">Overview</div>
+      <div class="sidebar-item" onclick="go('s-admin')"><div class="sidebar-icon">📊</div>Dashboard</div>
+      <div class="sidebar-section">Management</div>
+      <div class="sidebar-item" onclick="go('s-admin-txn')"><div class="sidebar-icon">⏳</div>Transactions</div>
+      <div class="sidebar-item" onclick="go('s-admin-kyc')"><div class="sidebar-icon">👥</div>KYC Review</div>
+      <div class="sidebar-item active"><div class="sidebar-icon">🏢</div>Properties</div>
+      <div class="sidebar-item"><div class="sidebar-icon">💰</div>Valuations</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📁</div>Documents</div>
+      <div class="sidebar-section">Reports</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📈</div>Analytics</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📋</div>Audit Logs</div>
+    </div>
+    <div class="admin-content"><div class="page-inner">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+        <div><h1>Properties</h1><div class="subtitle" id="prop-list-subtitle"></div></div>
+        <button class="btn btn-gold" onclick="openAddProperty()">+ Add Property</button>
+      </div>
+      <!-- Filter bar -->
+      <div style="display:flex;gap:10px;margin-bottom:20px;">
+        <select class="form-select" id="prop-filter-status" style="width:auto;padding:8px 14px;font-size:13px;" onchange="renderAdminProperties()">
+          <option value="">All statuses</option>
+          <option value="Draft">Draft</option>
+          <option value="Open">Open</option>
+          <option value="Fully Subscribed">Fully Subscribed</option>
+          <option value="Closed">Closed</option>
+        </select>
+        <select class="form-select" id="prop-filter-type" style="width:auto;padding:8px 14px;font-size:13px;" onchange="renderAdminProperties()">
+          <option value="">All types</option>
+          <option value="Commercial">Commercial</option>
+          <option value="Residential">Residential</option>
+          <option value="Land">Land</option>
+        </select>
+      </div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Property</th><th>Type</th><th>Unit Price</th><th>Total Units</th><th>Subscribed</th><th>Yield</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="admin-properties-tbody"></tbody>
+        </table>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN: ADMIN ADD/EDIT PROPERTY ═══ -->
+<div id="s-admin-add-property" class="screen">
+  <div class="browser-bar"><div class="browser-dots"><div class="browser-dot dot-r"></div><div class="browser-dot dot-y"></div><div class="browser-dot dot-g"></div></div><div class="browser-url" id="add-prop-url">🔒 portal.propitz.com/admin/properties/new</div><div class="screen-nav-label" id="add-prop-nav-label">Admin · Add Property</div></div>
+  <div class="role-bar"><span class="role-label">View as:</span><button class="role-btn" onclick="sw('investor',this)">👤 Investor</button><button class="role-btn active" onclick="sw('admin',this)">🛡 Admin</button><span style="margin-left:auto;"><button class="btn btn-sm btn-outline" onclick="go('s-admin-properties')">← Back to Properties</button></span></div>
+  <div class="topnav" style="padding:0;"><div class="logo" style="padding:0 24px;">Propitz<span>Admin</span></div></div>
+  <div class="admin-layout">
+    <div class="sidebar">
+      <div class="sidebar-section">Overview</div>
+      <div class="sidebar-item" onclick="go('s-admin')"><div class="sidebar-icon">📊</div>Dashboard</div>
+      <div class="sidebar-section">Management</div>
+      <div class="sidebar-item" onclick="go('s-admin-txn')"><div class="sidebar-icon">⏳</div>Transactions</div>
+      <div class="sidebar-item" onclick="go('s-admin-kyc')"><div class="sidebar-icon">👥</div>KYC Review</div>
+      <div class="sidebar-item active"><div class="sidebar-icon">🏢</div>Properties</div>
+      <div class="sidebar-item"><div class="sidebar-icon">💰</div>Valuations</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📁</div>Documents</div>
+      <div class="sidebar-section">Reports</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📈</div>Analytics</div>
+      <div class="sidebar-item"><div class="sidebar-icon">📋</div>Audit Logs</div>
+    </div>
+    <div class="admin-content"><div class="page-inner">
+      <div class="page-header"><h1 id="add-prop-title">Add Property</h1><div class="subtitle">Fill in all required fields before publishing. Properties start in Draft status.</div></div>
+
+      <div class="two-col-70" style="align-items:start;gap:20px;">
+        <!-- LEFT: form -->
+        <div style="display:flex;flex-direction:column;gap:18px;">
+
+          <!-- Basic Info -->
+          <div class="card">
+            <div class="card-header"><span class="card-title">Basic Information</span></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Property Name <span style="color:var(--red);">*</span></label>
+                <input class="form-input" id="ap-name" placeholder="e.g. Brigade Metropolis Phase 2">
+              </div>
+              <div class="two-col">
+                <div class="form-group">
+                  <label class="form-label">City <span style="color:var(--red);">*</span></label>
+                  <input class="form-input" id="ap-city" placeholder="e.g. Bengaluru">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">State</label>
+                  <input class="form-input" id="ap-state" placeholder="e.g. Karnataka">
+                </div>
+              </div>
+              <div class="two-col">
+                <div class="form-group">
+                  <label class="form-label">Pin Code</label>
+                  <input class="form-input" id="ap-pin" placeholder="560001" maxlength="6">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Asset Type <span style="color:var(--red);">*</span></label>
+                  <select class="form-select" id="ap-type">
+                    <option value="">Select type…</option>
+                    <option value="Commercial">Commercial</option>
+                    <option value="Residential">Residential</option>
+                    <option value="Land">Land</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Total Area</label>
+                <div style="display:flex;gap:10px;">
+                  <input class="form-input" id="ap-area" placeholder="e.g. 42000" style="flex:1;">
+                  <select class="form-select" id="ap-area-unit" style="width:auto;">
+                    <option>sq ft</option><option>sq m</option><option>acres</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial Structure -->
+          <div class="card">
+            <div class="card-header"><span class="card-title">Financial Structure</span></div>
+            <div class="card-body">
+              <div class="two-col">
+                <div class="form-group">
+                  <label class="form-label">Total Valuation (₹) <span style="color:var(--red);">*</span></label>
+                  <input class="form-input" id="ap-valuation" placeholder="e.g. 120000000" type="number" oninput="syncUnitPrice()">
+                  <div class="form-hint">Enter full amount in rupees (e.g. 12 crore = 120000000)</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Total Units <span style="color:var(--red);">*</span></label>
+                  <input class="form-input" id="ap-units" placeholder="e.g. 1000" type="number" min="1" oninput="syncUnitPrice()">
+                </div>
+              </div>
+              <div class="two-col">
+                <div class="form-group">
+                  <label class="form-label">Unit Price (₹) <span style="color:var(--red);">*</span></label>
+                  <input class="form-input" id="ap-unit-price" placeholder="Auto-calculated" type="number" oninput="onUnitPriceEdit()">
+                  <div class="form-hint" id="ap-unit-price-hint">Auto-calculated from valuation ÷ units</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Minimum Investment Units <span style="color:var(--red);">*</span></label>
+                  <input class="form-input" id="ap-min-units" placeholder="e.g. 10" type="number" min="1">
+                  <div class="form-hint" id="ap-min-hint"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Projected Returns -->
+          <div class="card">
+            <div class="card-header"><span class="card-title">Projected Returns</span><span class="badge badge-amber" style="font-size:11px;">Displayed with disclaimer</span></div>
+            <div class="card-body">
+              <div class="two-col">
+                <div class="form-group">
+                  <label class="form-label">Expected Annual Yield (%)</label>
+                  <input class="form-input" id="ap-yield" placeholder="e.g. 9.5" type="number" step="0.1">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Holding Period</label>
+                  <input class="form-input" id="ap-holding" placeholder="e.g. 5–7 years">
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Rental Income Estimate (₹/year)</label>
+                <input class="form-input" id="ap-rental" placeholder="e.g. 11000000" type="number">
+                <div class="form-hint">Optional. Used to compute per-unit distribution estimates.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="card">
+            <div class="card-header"><span class="card-title">Description & Media</span></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Property Description</label>
+                <textarea class="form-input" id="ap-desc" rows="4" placeholder="Describe the property, tenant profile, WALE, location highlights…" style="resize:vertical;"></textarea>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Display Emoji / Icon</label>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                  <span id="ap-emoji-preview" style="font-size:32px;width:50px;height:50px;background:var(--surface-2);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;border:1px solid var(--border);">🏢</span>
+                  <div style="flex:1;">
+                    <input class="form-input" id="ap-emoji" value="🏢" maxlength="4" oninput="document.getElementById('ap-emoji-preview').textContent=this.value||'🏢'">
+                    <div class="form-hint">Single emoji representing the property type. Shows on listing cards.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: preview + publish -->
+        <div style="position:sticky;top:20px;display:flex;flex-direction:column;gap:14px;">
+
+          <!-- Live preview card -->
+          <div class="card" style="overflow:hidden;">
+            <div id="ap-preview-img" style="height:110px;display:flex;align-items:center;justify-content:center;font-size:40px;background:linear-gradient(135deg,#1B3057,#2A4A7A);position:relative;">
+              <span id="ap-preview-emoji">🏢</span>
+              <div style="position:absolute;bottom:0;left:0;right:0;padding:6px 12px;background:linear-gradient(transparent,rgba(15,30,56,0.85));font-size:11px;color:rgba(255,255,255,0.85);font-weight:500;" id="ap-preview-type-loc">Commercial · —</div>
+            </div>
+            <div style="padding:14px 16px;">
+              <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:2px;" id="ap-preview-name">Property Name</div>
+              <div style="font-size:12px;color:var(--slate-light);margin-bottom:10px;" id="ap-preview-loc">📍 Location</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+                <div class="prop-stat-item"><div class="prop-stat-label">Unit Price</div><div class="prop-stat-val" id="ap-preview-price">—</div></div>
+                <div class="prop-stat-item"><div class="prop-stat-label">Min. Invest.</div><div class="prop-stat-val" id="ap-preview-min">—</div></div>
+                <div class="prop-stat-item"><div class="prop-stat-label">Yield</div><div class="prop-stat-val" style="color:var(--green);" id="ap-preview-yield">—</div></div>
+                <div class="prop-stat-item"><div class="prop-stat-label">Total Value</div><div class="prop-stat-val" id="ap-preview-val">—</div></div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span class="badge badge-amber" id="ap-preview-status">Draft</span>
+                <span style="font-size:11px;color:var(--slate-light);">Live preview</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status & publish -->
+          <div class="card">
+            <div class="card-header"><span class="card-title">Publication Status</span></div>
+            <div class="card-body">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Status</label>
+                <select class="form-select" id="ap-status" onchange="updateStatusPreview()">
+                  <option value="Draft">Draft — not visible to investors</option>
+                  <option value="Open">Open — live on marketplace</option>
+                  <option value="Closed">Closed — no new investments</option>
+                </select>
+                <div class="form-hint" id="ap-status-hint" style="margin-top:8px;">Properties start as Draft and require legal team sign-off before going Open.</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-gold" style="width:100%;justify-content:center;padding:13px;font-size:14.5px;" onclick="saveProperty()" id="ap-save-btn">Save Property →</button>
+          <button class="btn btn-outline" style="width:100%;justify-content:center;" onclick="resetPropertyForm()">Reset Form</button>
+          <div style="padding:10px 12px;background:var(--amber-bg);border:1px solid rgba(183,121,31,0.2);border-radius:var(--radius-sm);font-size:11.5px;color:var(--slate);line-height:1.6;">⚠️ Projected yields and financial details must be reviewed by the legal team before setting status to Open.</div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
 <!-- ═══ SCREEN: ADMIN DISTRIBUTION ═══ -->
 <div id="s-admin-distribution" class="screen">
   <div class="browser-bar"><div class="browser-dots"><div class="browser-dot dot-r"></div><div class="browser-dot dot-y"></div><div class="browser-dot dot-g"></div></div><div class="browser-url">🔒 portal.propitz.com/admin/distributions/new</div><div class="screen-nav-label">Admin · New Distribution</div></div>
@@ -951,7 +1197,7 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
       <div class="sidebar-section">Management</div>
       <div class="sidebar-item active" onclick="go('s-admin-txn')"><div class="sidebar-icon">⏳</div>Transactions</div>
       <div class="sidebar-item" onclick="go('s-admin-kyc')"><div class="sidebar-icon">👥</div>KYC Review</div>
-      <div class="sidebar-item"><div class="sidebar-icon">🏢</div>Properties</div>
+      <div class="sidebar-item" onclick="go('s-admin-properties')"><div class="sidebar-icon">🏢</div>Properties</div>
       <div class="sidebar-item"><div class="sidebar-icon">💰</div>Valuations</div>
       <div class="sidebar-item"><div class="sidebar-icon">📁</div>Documents</div>
       <div class="sidebar-section">Reports</div>
@@ -1871,6 +2117,8 @@ function go(id) {
   if (id === 's-admin-txn')       { renderAdminTxns(); switchAdminTxnTab('pending'); }
   if (id === 's-admin')           renderAdminTxns();
   if (id === 's-admin-distribution') { calcDistribution(); document.getElementById('dist-preview-card').style.display='none'; }
+  if (id === 's-admin-properties')  { renderAdminProperties(); }
+  if (id === 's-admin-add-property') { updatePreview(); updateStatusPreview(); }
 }
 
 // ─────────────────────────────────────────────
@@ -1959,6 +2207,274 @@ function toast(msg) {
   el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+// ─────────────────────────────────────────────
+// ADMIN PROPERTIES LIST
+// ─────────────────────────────────────────────
+function renderAdminProperties() {
+  const statusF = document.getElementById('prop-filter-status')?.value || '';
+  const typeF   = document.getElementById('prop-filter-type')?.value   || '';
+  let props = db.properties;
+  if (statusF) props = props.filter(p => p.status === statusF);
+  if (typeF)   props = props.filter(p => p.type === typeF);
+
+  set('prop-list-subtitle', db.properties.length + ' properties total · ' + db.properties.filter(p=>p.status==='Open').length + ' open');
+
+  const tbody = document.getElementById('admin-properties-tbody');
+  if (!tbody) return;
+  if (!props.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--slate-light);">No properties match your filters.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = props.map(p => {
+    const soldPct = Math.round(p.subscribedUnits / p.totalUnits * 100);
+    const aum = Math.round(p.subscribedUnits * p.unitPrice);
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:36px;height:36px;border-radius:var(--radius-sm);background:${p.gradient||'linear-gradient(135deg,#1B3057,#2A4A7A)'};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">${p.emoji||'🏢'}</div>
+          <div>
+            <div style="font-weight:500;">${p.name}</div>
+            <div class="muted" style="font-size:11.5px;">📍 ${p.location}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="badge badge-navy">${p.type}</span></td>
+      <td class="num">${fmt(p.unitPrice)}</td>
+      <td class="num">${p.totalUnits.toLocaleString('en-IN')}</td>
+      <td>
+        <div style="font-size:12.5px;margin-bottom:3px;">${p.subscribedUnits.toLocaleString('en-IN')}/${p.totalUnits.toLocaleString('en-IN')} <span class="muted">(${soldPct}%)</span></div>
+        <div class="progress-wrap"><div class="progress-fill" style="width:${soldPct}%;${soldPct>85?'background:var(--amber);':''}"></div></div>
+      </td>
+      <td class="num" style="color:var(--green);">${p.yield ? p.yield+'% p.a.' : '—'}</td>
+      <td>${propStatusBadge(p.status)}</td>
+      <td>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-sm btn-outline" onclick="editProperty('${p.id}')">✏ Edit</button>
+          ${p.status==='Draft' ? `<button class="btn btn-sm btn-danger" onclick="deleteProperty('${p.id}')">🗑</button>` : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function propStatusBadge(status) {
+  const map = { Draft:'badge-amber', Open:'badge-green', 'Fully Subscribed':'badge-navy', Closed:'badge-red', Exited:'badge-red' };
+  const icon = { Draft:'✏', Open:'✓', 'Fully Subscribed':'🔒', Closed:'✗', Exited:'🏁' };
+  return `<span class="badge ${map[status]||'badge-navy'}">${icon[status]||''} ${status}</span>`;
+}
+
+function deleteProperty(id) {
+  const p = db.properties.find(p => p.id === id);
+  if (!p || p.status !== 'Draft') { toast('⚠ Only Draft properties can be deleted'); return; }
+  db.properties = db.properties.filter(p => p.id !== id);
+  DB.save(db);
+  renderAdminProperties();
+  toast('🗑 Property deleted');
+}
+
+// ─────────────────────────────────────────────
+// ADD / EDIT PROPERTY FORM
+// ─────────────────────────────────────────────
+let _editingPropertyId = null;
+
+function openAddProperty() {
+  _editingPropertyId = null;
+  resetPropertyForm();
+  set('add-prop-title', 'Add Property');
+  set('add-prop-url', '🔒 portal.propitz.com/admin/properties/new');
+  set('add-prop-nav-label', 'Admin · Add Property');
+  document.getElementById('ap-save-btn').textContent = 'Save Property →';
+  go('s-admin-add-property');
+}
+
+function editProperty(id) {
+  const p = db.properties.find(p => p.id === id);
+  if (!p) return;
+  _editingPropertyId = id;
+
+  document.getElementById('ap-name').value       = p.name;
+  const locParts = p.location.split(', ');
+  document.getElementById('ap-city').value        = locParts[0] || '';
+  document.getElementById('ap-state').value       = locParts[1] || '';
+  document.getElementById('ap-pin').value         = p.pin || '';
+  document.getElementById('ap-type').value        = p.type;
+  document.getElementById('ap-area').value        = p.area || '';
+  document.getElementById('ap-valuation').value   = p.totalValue;
+  document.getElementById('ap-units').value       = p.totalUnits;
+  document.getElementById('ap-unit-price').value  = p.unitPrice;
+  document.getElementById('ap-min-units').value   = p.minUnits;
+  document.getElementById('ap-yield').value       = p.yield || '';
+  document.getElementById('ap-holding').value     = p.holdingPeriod || '';
+  document.getElementById('ap-rental').value      = p.rentalEstimate || '';
+  document.getElementById('ap-desc').value        = p.description || '';
+  document.getElementById('ap-emoji').value       = p.emoji || '🏢';
+  document.getElementById('ap-status').value      = p.status;
+
+  // locked financial fields for non-Draft
+  const locked = p.status !== 'Draft';
+  ['ap-valuation','ap-units','ap-unit-price','ap-min-units'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.readOnly = locked; el.style.background = locked ? 'var(--surface-2)' : ''; }
+  });
+  if (locked) {
+    document.getElementById('ap-unit-price-hint').textContent = '🔒 Financial fields locked once property is Open';
+  }
+
+  updatePreview();
+  updateStatusPreview();
+  set('add-prop-title', 'Edit Property');
+  set('add-prop-url', '🔒 portal.propitz.com/admin/properties/' + id);
+  set('add-prop-nav-label', 'Admin · Edit Property');
+  document.getElementById('ap-save-btn').textContent = 'Save Changes →';
+  go('s-admin-add-property');
+}
+
+function resetPropertyForm() {
+  ['ap-name','ap-city','ap-state','ap-pin','ap-area','ap-valuation','ap-units',
+   'ap-unit-price','ap-min-units','ap-yield','ap-holding','ap-rental','ap-desc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.readOnly = false; el.style.background = ''; }
+  });
+  document.getElementById('ap-type').value   = '';
+  document.getElementById('ap-status').value = 'Draft';
+  document.getElementById('ap-emoji').value  = '🏢';
+  document.getElementById('ap-unit-price-hint').textContent = 'Auto-calculated from valuation ÷ units';
+  _editingPropertyId = null;
+  updatePreview();
+  updateStatusPreview();
+}
+
+function syncUnitPrice() {
+  const val   = parseFloat(document.getElementById('ap-valuation').value) || 0;
+  const units = parseFloat(document.getElementById('ap-units').value) || 0;
+  const priceEl = document.getElementById('ap-unit-price');
+  if (val && units && !priceEl.dataset.manualEdit) {
+    priceEl.value = Math.round(val / units);
+  }
+  const minUnits = parseFloat(document.getElementById('ap-min-units').value) || 0;
+  const minHint = document.getElementById('ap-min-hint');
+  if (minHint && priceEl.value && minUnits) {
+    minHint.textContent = 'Minimum investment: ' + fmt(priceEl.value * minUnits);
+  }
+  updatePreview();
+}
+
+function onUnitPriceEdit() {
+  document.getElementById('ap-unit-price').dataset.manualEdit = '1';
+  document.getElementById('ap-unit-price-hint').textContent = 'Manually set';
+  updatePreview();
+}
+
+function updatePreview() {
+  const name      = document.getElementById('ap-name').value       || 'Property Name';
+  const city      = document.getElementById('ap-city').value       || '—';
+  const state     = document.getElementById('ap-state').value;
+  const type      = document.getElementById('ap-type').value       || '—';
+  const unitPrice = parseFloat(document.getElementById('ap-unit-price').value) || 0;
+  const minUnits  = parseFloat(document.getElementById('ap-min-units').value)  || 0;
+  const yld       = document.getElementById('ap-yield').value;
+  const valuation = parseFloat(document.getElementById('ap-valuation').value) || 0;
+  const emoji     = document.getElementById('ap-emoji').value       || '🏢';
+
+  set('ap-preview-name',     name);
+  set('ap-preview-loc',      '📍 ' + [city, state].filter(Boolean).join(', '));
+  set('ap-preview-type-loc', type + ' · ' + city);
+  set('ap-preview-emoji',    emoji);
+  set('ap-preview-price',    unitPrice ? fmt(unitPrice) : '—');
+  set('ap-preview-min',      minUnits  ? minUnits + ' units' : '—');
+  set('ap-preview-yield',    yld       ? yld + '% p.a.' : '—');
+  document.getElementById('ap-preview-emoji').textContent = emoji;
+
+  // Total value formatted as Cr/L
+  if (valuation >= 10000000) {
+    set('ap-preview-val', '₹' + (valuation/10000000).toFixed(1) + 'Cr');
+  } else if (valuation >= 100000) {
+    set('ap-preview-val', '₹' + (valuation/100000).toFixed(1) + 'L');
+  } else {
+    set('ap-preview-val', valuation ? fmt(valuation) : '—');
+  }
+}
+
+function updateStatusPreview() {
+  const status = document.getElementById('ap-status').value;
+  const hints = {
+    Draft: 'Properties start as Draft and require legal team sign-off before going Open.',
+    Open:  'Live on the investor marketplace. Financial fields are now locked.',
+    Closed:'No new investments accepted. Existing investors retain ownership.',
+  };
+  set('ap-status-hint', hints[status] || '');
+  const badge = document.getElementById('ap-preview-status');
+  if (badge) {
+    badge.className = 'badge ' + (status==='Open'?'badge-green':status==='Closed'?'badge-red':'badge-amber');
+    badge.textContent = (status==='Draft'?'✏ ':status==='Open'?'✓ ':'✗ ') + status;
+  }
+}
+
+function saveProperty() {
+  const name     = document.getElementById('ap-name').value.trim();
+  const city     = document.getElementById('ap-city').value.trim();
+  const type     = document.getElementById('ap-type').value;
+  const valuation= parseFloat(document.getElementById('ap-valuation').value);
+  const units    = parseInt(document.getElementById('ap-units').value);
+  const unitPrice= parseInt(document.getElementById('ap-unit-price').value);
+  const minUnits = parseInt(document.getElementById('ap-min-units').value);
+  const status   = document.getElementById('ap-status').value;
+
+  // Validation
+  if (!name)      { toast('⚠ Property name is required'); return; }
+  if (!city)      { toast('⚠ City is required'); return; }
+  if (!type)      { toast('⚠ Asset type is required'); return; }
+  if (!valuation) { toast('⚠ Total valuation is required'); return; }
+  if (!units)     { toast('⚠ Total units is required'); return; }
+  if (!unitPrice) { toast('⚠ Unit price is required'); return; }
+  if (!minUnits)  { toast('⚠ Minimum investment units is required'); return; }
+
+  const state   = document.getElementById('ap-state').value.trim();
+  const pin     = document.getElementById('ap-pin').value.trim();
+  const area    = document.getElementById('ap-area').value;
+  const yld     = parseFloat(document.getElementById('ap-yield').value) || null;
+  const holding = document.getElementById('ap-holding').value.trim();
+  const rental  = parseFloat(document.getElementById('ap-rental').value) || null;
+  const desc    = document.getElementById('ap-desc').value.trim();
+  const emoji   = document.getElementById('ap-emoji').value || '🏢';
+
+  const gradients = {
+    Commercial: 'linear-gradient(135deg,#1B3057,#2A4A7A)',
+    Residential:'linear-gradient(135deg,#2D4A2A,#3A6B36)',
+    Land:       'linear-gradient(135deg,#4A3A1A,#7A5A1B)',
+  };
+
+  if (_editingPropertyId) {
+    const p = db.properties.find(p => p.id === _editingPropertyId);
+    if (p) {
+      p.name = name; p.location = [city, state].filter(Boolean).join(', ');
+      p.city = city; p.state = state; p.pin = pin; p.type = type; p.area = area;
+      p.totalValue = valuation; p.totalUnits = units; p.unitPrice = unitPrice;
+      p.minUnits = minUnits; p.yield = yld; p.holdingPeriod = holding;
+      p.rentalEstimate = rental; p.description = desc; p.emoji = emoji;
+      p.status = status; p.gradient = gradients[type] || gradients.Commercial;
+      if (status === 'Fully Subscribed' && p.subscribedUnits < p.totalUnits) p.status = 'Open';
+    }
+    DB.save(db);
+    toast('✓ Property updated · ' + name);
+  } else {
+    const id = 'prop-' + Date.now();
+    db.properties.push({
+      id, name, location: [city, state].filter(Boolean).join(', '),
+      city, state, pin, type, area, totalValue: valuation,
+      totalUnits: units, unitPrice, minUnits, subscribedUnits: 0,
+      yield: yld, holdingPeriod: holding, rentalEstimate: rental,
+      description: desc, emoji, status,
+      gradient: gradients[type] || gradients.Commercial,
+    });
+    DB.save(db);
+    toast('✓ Property saved · ' + name + ' · Status: ' + status);
+  }
+
+  renderAdminProperties();
+  go('s-admin-properties');
 }
 
 // ─────────────────────────────────────────────
