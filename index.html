@@ -223,6 +223,14 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
 .toast.show{transform:translateY(0);opacity:1;}
 ::-webkit-scrollbar{width:6px;}
 ::-webkit-scrollbar-thumb{background:rgba(15,30,56,0.15);border-radius:3px;}
+
+/* PROPERTY IMAGE TILES */
+.prop-img-tile{position:relative;aspect-ratio:4/3;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);background:var(--surface-2);cursor:grab;}
+.prop-img-tile img{width:100%;height:100%;object-fit:cover;display:block;}
+.prop-img-tile .tile-overlay{position:absolute;inset:0;background:rgba(15,30,56,0);transition:background .18s;display:flex;align-items:center;justify-content:center;gap:6px;opacity:0;transition:all .18s;}
+.prop-img-tile:hover .tile-overlay{background:rgba(15,30,56,0.55);opacity:1;}
+.prop-img-tile .tile-badge{position:absolute;top:6px;left:6px;background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;}
+.prop-img-tile.dragging{opacity:0.4;}
 </style>
 </head>
 <body>
@@ -385,8 +393,9 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
           <div class="prop-stats">
             <div class="prop-stat-item"><div class="prop-stat-label">Unit Price</div><div class="prop-stat-val">₹2,287</div></div>
             <div class="prop-stat-item"><div class="prop-stat-label">Min. Invest.</div><div class="prop-stat-val">10 units</div></div>
-            <div class="prop-stat-item"><div class="prop-stat-label">Yield</div><div class="prop-stat-val" style="color:var(--green);">9.2% p.a.</div></div>
-            <div class="prop-stat-item"><div class="prop-stat-label">Total Value</div><div class="prop-stat-val">₹12.8Cr</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Rental Yield</div><div class="prop-stat-val" style="color:var(--green);">9.2% p.a.</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Cap. Growth</div><div class="prop-stat-val" style="color:var(--navy-mid);">7.0% p.a.</div></div>
+            <div class="prop-stat-item" style="grid-column:span 2;"><div class="prop-stat-label">Total Value</div><div class="prop-stat-val">₹12.8Cr</div></div>
           </div>
           <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;"><span class="muted">Available</span><span style="font-weight:500;">880/1000 units</span></div><div class="units-bar"><div class="units-fill" style="width:88%;"></div></div></div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;"><span class="badge badge-gold">⚡ Filling fast</span><button class="btn btn-sm btn-gold" onclick="event.stopPropagation();go('s-prop-detail')">Subscribe →</button></div>
@@ -400,8 +409,9 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
           <div class="prop-stats">
             <div class="prop-stat-item"><div class="prop-stat-label">Unit Price</div><div class="prop-stat-val">₹3,950</div></div>
             <div class="prop-stat-item"><div class="prop-stat-label">Min. Invest.</div><div class="prop-stat-val">5 units</div></div>
-            <div class="prop-stat-item"><div class="prop-stat-label">Yield</div><div class="prop-stat-val" style="color:var(--green);">7.8% p.a.</div></div>
-            <div class="prop-stat-item"><div class="prop-stat-label">Total Value</div><div class="prop-stat-val">₹24.5Cr</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Rental Yield</div><div class="prop-stat-val" style="color:var(--green);">7.8% p.a.</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Cap. Growth</div><div class="prop-stat-val" style="color:var(--navy-mid);">6.5% p.a.</div></div>
+            <div class="prop-stat-item" style="grid-column:span 2;"><div class="prop-stat-label">Total Value</div><div class="prop-stat-val">₹24.5Cr</div></div>
           </div>
           <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;"><span class="muted">Available</span><span style="font-weight:500;">2,100/3,000 units</span></div><div class="units-bar"><div class="units-fill" style="width:70%;"></div></div></div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;"><span class="badge badge-green">✓ Open</span><button class="btn btn-sm btn-gold" onclick="event.stopPropagation();go('s-prop-detail')">Subscribe →</button></div>
@@ -415,8 +425,9 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
           <div class="prop-stats">
             <div class="prop-stat-item"><div class="prop-stat-label">Unit Price</div><div class="prop-stat-val">₹4,700</div></div>
             <div class="prop-stat-item"><div class="prop-stat-label">Min. Invest.</div><div class="prop-stat-val">20 units</div></div>
-            <div class="prop-stat-item"><div class="prop-stat-label">Yield</div><div class="prop-stat-val" style="color:var(--green);">10.1% p.a.</div></div>
-            <div class="prop-stat-item"><div class="prop-stat-label">Total Value</div><div class="prop-stat-val">₹18.8Cr</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Rental Yield</div><div class="prop-stat-val" style="color:var(--green);">10.1% p.a.</div></div>
+            <div class="prop-stat-item"><div class="prop-stat-label">Cap. Growth</div><div class="prop-stat-val" style="color:var(--navy-mid);">8.5% p.a.</div></div>
+            <div class="prop-stat-item" style="grid-column:span 2;"><div class="prop-stat-label">Total Value</div><div class="prop-stat-val">₹18.8Cr</div></div>
           </div>
           <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;"><span class="muted">Available</span><span style="font-weight:500;color:var(--red);">420/2,000 units</span></div><div class="units-bar"><div class="units-fill" style="width:21%;background:var(--red);"></div></div></div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;"><span class="badge badge-red">🔥 Almost full</span><button class="btn btn-sm btn-gold" onclick="event.stopPropagation();go('s-prop-detail')">Subscribe →</button></div>
@@ -462,8 +473,10 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
               <div class="prop-stat-item"><div class="prop-stat-label">Total Valuation</div><div class="prop-stat-val">₹12.8 Cr</div></div>
               <div class="prop-stat-item"><div class="prop-stat-label">Total Units</div><div class="prop-stat-val">1,000</div></div>
               <div class="prop-stat-item"><div class="prop-stat-label">Unit Price</div><div class="prop-stat-val">₹2,287</div></div>
-              <div class="prop-stat-item"><div class="prop-stat-label">Projected Yield</div><div class="prop-stat-val" style="color:var(--green);">9.2% p.a.</div></div>
+              <div class="prop-stat-item"><div class="prop-stat-label">Rental Yield</div><div class="prop-stat-val" style="color:var(--green);">9.2% p.a.</div></div>
+              <div class="prop-stat-item"><div class="prop-stat-label">Capital Growth</div><div class="prop-stat-val" style="color:var(--navy-mid);">7.0% p.a.</div></div>
               <div class="prop-stat-item"><div class="prop-stat-label">Holding Period</div><div class="prop-stat-val">5–7 years</div></div>
+              <div class="prop-stat-item"><div class="prop-stat-label">Lock-in Period</div><div class="prop-stat-val">3 years</div></div>
               <div class="prop-stat-item"><div class="prop-stat-label">Asset Class</div><div class="prop-stat-val">Commercial</div></div>
             </div>
             <p style="font-size:13.5px;color:var(--slate);line-height:1.75;">Grade-A commercial complex in the heart of Koramangala's tech corridor. Fully leased to Fortune 500 tenants with WALE of 6.3 years. Quarterly distributions from rental income with capital appreciation potential from Bengaluru's strong market fundamentals.</p>
@@ -981,7 +994,7 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
       </div>
       <div class="card">
         <table class="data-table">
-          <thead><tr><th>Property</th><th>Type</th><th>Unit Price</th><th>Total Units</th><th>Subscribed</th><th>Yield</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Property</th><th>Type</th><th>Unit Price</th><th>Total Units</th><th>Subscribed</th><th>Yield / Growth</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="admin-properties-tbody"></tbody>
         </table>
       </div>
@@ -1023,13 +1036,17 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
                 <label class="form-label">Property Name <span style="color:var(--red);">*</span></label>
                 <input class="form-input" id="ap-name" placeholder="e.g. Brigade Metropolis Phase 2">
               </div>
+              <div class="form-group">
+                <label class="form-label">Town / City / Village <span style="color:var(--red);">*</span></label>
+                <input class="form-input" id="ap-city" placeholder="e.g. Koramangala, Bengaluru">
+              </div>
               <div class="two-col">
                 <div class="form-group">
-                  <label class="form-label">City <span style="color:var(--red);">*</span></label>
-                  <input class="form-input" id="ap-city" placeholder="e.g. Bengaluru">
+                  <label class="form-label">District <span style="color:var(--red);">*</span></label>
+                  <input class="form-input" id="ap-district" placeholder="e.g. Bengaluru Urban">
                 </div>
                 <div class="form-group">
-                  <label class="form-label">State</label>
+                  <label class="form-label">State <span style="color:var(--red);">*</span></label>
                   <input class="form-input" id="ap-state" placeholder="e.g. Karnataka">
                 </div>
               </div>
@@ -1053,7 +1070,7 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
                 <div style="display:flex;gap:10px;">
                   <input class="form-input" id="ap-area" placeholder="e.g. 42000" style="flex:1;">
                   <select class="form-select" id="ap-area-unit" style="width:auto;">
-                    <option>sq ft</option><option>sq m</option><option>acres</option>
+                    <option>sq ft</option><option>sq m</option><option>cents</option><option>acres</option><option>grounds</option><option>guntas</option>
                   </select>
                 </div>
               </div>
@@ -1096,12 +1113,26 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
             <div class="card-body">
               <div class="two-col">
                 <div class="form-group">
-                  <label class="form-label">Expected Annual Yield (%)</label>
+                  <label class="form-label">Rental Yield (% p.a.)</label>
                   <input class="form-input" id="ap-yield" placeholder="e.g. 9.5" type="number" step="0.1">
+                  <div class="form-hint">Annual income from rentals / distributions as % of investment.</div>
                 </div>
+                <div class="form-group">
+                  <label class="form-label">Capital Growth (% p.a.)</label>
+                  <input class="form-input" id="ap-growth" placeholder="e.g. 8.0" type="number" step="0.1">
+                  <div class="form-hint">Expected annual property value appreciation.</div>
+                </div>
+              </div>
+              <div class="two-col">
                 <div class="form-group">
                   <label class="form-label">Holding Period</label>
                   <input class="form-input" id="ap-holding" placeholder="e.g. 5–7 years">
+                  <div class="form-hint">Expected investment duration before exit.</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Lock-in Period</label>
+                  <input class="form-input" id="ap-lockin" placeholder="e.g. 3 years">
+                  <div class="form-hint">Minimum hold before resale is permitted.</div>
                 </div>
               </div>
               <div class="form-group" style="margin-bottom:0;">
@@ -1133,6 +1164,55 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
             </div>
           </div>
 
+          <!-- Images -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Property Images</span>
+              <span class="badge badge-navy">Up to 10 · JPG / PNG</span>
+            </div>
+            <div class="card-body">
+              <div style="font-size:12.5px;color:var(--slate);margin-bottom:14px;line-height:1.6;">
+                Upload photos of the property. First image is used as the cover. Drag to reorder.
+              </div>
+              <!-- Image grid -->
+              <div id="ap-image-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;"></div>
+              <!-- Upload button -->
+              <div id="ap-image-upload-area" style="border:2px dashed var(--border-strong);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:background .15s;" onclick="document.getElementById('ap-image-input').click()" ondragover="event.preventDefault();this.style.background='var(--gold-pale)'" ondragleave="this.style.background=''" ondrop="handleImageDrop(event)">
+                <div style="font-size:24px;margin-bottom:6px;">📷</div>
+                <div style="font-size:13.5px;font-weight:500;color:var(--navy);">Click to upload or drag & drop</div>
+                <div style="font-size:12px;color:var(--slate-light);margin-top:3px;">JPG, PNG · Max 10MB per file · Images compressed automatically</div>
+              </div>
+              <input type="file" id="ap-image-input" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="handleImageFiles(this.files)">
+            </div>
+          </div>
+
+          <!-- Documents -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Property Documents</span>
+              <span class="badge badge-navy">PDF only · Max 20MB</span>
+            </div>
+            <div class="card-body">
+              <div style="font-size:12.5px;color:var(--slate);margin-bottom:16px;line-height:1.6;">
+                Upload legal and due diligence documents. These will be accessible to KYC-verified investors viewing this property.
+              </div>
+
+              <!-- Standard document slots -->
+              <div style="display:flex;flex-direction:column;gap:10px;" id="ap-doc-slots">
+                <!-- rendered by renderDocSlots() -->
+              </div>
+
+              <!-- Add custom document -->
+              <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+                <div style="font-size:12px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">Add Other Document</div>
+                <div style="display:flex;gap:8px;">
+                  <input class="form-input" id="ap-doc-custom-name" placeholder="Document name (e.g. Encumbrance Certificate)" style="flex:1;">
+                  <button class="btn btn-outline btn-sm" style="white-space:nowrap;" onclick="addCustomDocSlot()">+ Add</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- RIGHT: preview + publish -->
@@ -1150,8 +1230,9 @@ body{font-family:var(--font-body);background:#F0EDE6;color:var(--navy);min-heigh
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
                 <div class="prop-stat-item"><div class="prop-stat-label">Unit Price</div><div class="prop-stat-val" id="ap-preview-price">—</div></div>
                 <div class="prop-stat-item"><div class="prop-stat-label">Min. Invest.</div><div class="prop-stat-val" id="ap-preview-min">—</div></div>
-                <div class="prop-stat-item"><div class="prop-stat-label">Yield</div><div class="prop-stat-val" style="color:var(--green);" id="ap-preview-yield">—</div></div>
-                <div class="prop-stat-item"><div class="prop-stat-label">Total Value</div><div class="prop-stat-val" id="ap-preview-val">—</div></div>
+                <div class="prop-stat-item"><div class="prop-stat-label">Rental Yield</div><div class="prop-stat-val" style="color:var(--green);" id="ap-preview-yield">—</div></div>
+                <div class="prop-stat-item"><div class="prop-stat-label">Cap. Growth</div><div class="prop-stat-val" style="color:var(--navy-mid);" id="ap-preview-growth">—</div></div>
+                <div class="prop-stat-item" style="grid-column:span 2;"><div class="prop-stat-label">Total Value</div><div class="prop-stat-val" id="ap-preview-val">—</div></div>
               </div>
               <div style="display:flex;align-items:center;justify-content:space-between;">
                 <span class="badge badge-amber" id="ap-preview-status">Draft</span>
@@ -1396,13 +1477,16 @@ const newTxnId = () => 'TXN-' + String(++_txnSeq).padStart(4,'0');
 const SEED = {
   properties: [
     { id:'prop-1', name:'Prestige Koramangala', location:'Koramangala, Bengaluru', type:'Commercial',
-      totalUnits:1000, unitPrice:2287, minUnits:10, yield:9.2, totalValue:128000000,
+      totalUnits:1000, unitPrice:2287, minUnits:10, yield:9.2, growth:7.0, totalValue:128000000,
+      holdingPeriod:'5–7 years', lockinPeriod:'3 years',
       subscribedUnits:880, status:'Open', emoji:'🏢', gradient:'linear-gradient(135deg,#1B3057,#2A4A7A)' },
     { id:'prop-2', name:'Lodha Primero BKC', location:'Bandra Kurla Complex, Mumbai', type:'Residential',
-      totalUnits:3000, unitPrice:3950, minUnits:5, yield:7.8, totalValue:245000000,
+      totalUnits:3000, unitPrice:3950, minUnits:5, yield:7.8, growth:6.5, totalValue:245000000,
+      holdingPeriod:'5–8 years', lockinPeriod:'2 years',
       subscribedUnits:900, status:'Open', emoji:'🏙️', gradient:'linear-gradient(135deg,#2D4A2A,#3A6B36)' },
     { id:'prop-3', name:'DLF CyberHub Phase 3', location:'Sector 24, Gurugram', type:'Commercial',
-      totalUnits:2000, unitPrice:4700, minUnits:20, yield:10.1, totalValue:188000000,
+      totalUnits:2000, unitPrice:4700, minUnits:20, yield:10.1, growth:8.5, totalValue:188000000,
+      holdingPeriod:'6–8 years', lockinPeriod:'3 years',
       subscribedUnits:1580, status:'Open', emoji:'🏗️', gradient:'linear-gradient(135deg,#4A2A1A,#7A3A1B)' },
   ],
   investors: [
@@ -2118,7 +2202,7 @@ function go(id) {
   if (id === 's-admin')           renderAdminTxns();
   if (id === 's-admin-distribution') { calcDistribution(); document.getElementById('dist-preview-card').style.display='none'; }
   if (id === 's-admin-properties')  { renderAdminProperties(); }
-  if (id === 's-admin-add-property') { updatePreview(); updateStatusPreview(); }
+  if (id === 's-admin-add-property') { updatePreview(); updateStatusPreview(); renderDocSlots(); }
 }
 
 // ─────────────────────────────────────────────
@@ -2247,7 +2331,7 @@ function renderAdminProperties() {
         <div style="font-size:12.5px;margin-bottom:3px;">${p.subscribedUnits.toLocaleString('en-IN')}/${p.totalUnits.toLocaleString('en-IN')} <span class="muted">(${soldPct}%)</span></div>
         <div class="progress-wrap"><div class="progress-fill" style="width:${soldPct}%;${soldPct>85?'background:var(--amber);':''}"></div></div>
       </td>
-      <td class="num" style="color:var(--green);">${p.yield ? p.yield+'% p.a.' : '—'}</td>
+      <td><div style="color:var(--green);font-size:13px;font-weight:500;">${p.yield ? p.yield+'% yield' : '—'}</div><div style="color:var(--navy-mid);font-size:12px;">${p.growth ? p.growth+'% growth' : '—'}</div></td>
       <td>${propStatusBadge(p.status)}</td>
       <td>
         <div style="display:flex;gap:6px;">
@@ -2295,18 +2379,21 @@ function editProperty(id) {
   _editingPropertyId = id;
 
   document.getElementById('ap-name').value       = p.name;
-  const locParts = p.location.split(', ');
-  document.getElementById('ap-city').value        = locParts[0] || '';
-  document.getElementById('ap-state').value       = locParts[1] || '';
-  document.getElementById('ap-pin').value         = p.pin || '';
+  document.getElementById('ap-city').value        = p.city     || '';
+  document.getElementById('ap-district').value    = p.district || '';
+  document.getElementById('ap-state').value       = p.state    || '';
+  document.getElementById('ap-pin').value         = p.pin      || '';
   document.getElementById('ap-type').value        = p.type;
-  document.getElementById('ap-area').value        = p.area || '';
+  document.getElementById('ap-area').value         = p.area     || '';
+  document.getElementById('ap-area-unit').value    = p.areaUnit || 'sq ft';
   document.getElementById('ap-valuation').value   = p.totalValue;
   document.getElementById('ap-units').value       = p.totalUnits;
   document.getElementById('ap-unit-price').value  = p.unitPrice;
   document.getElementById('ap-min-units').value   = p.minUnits;
-  document.getElementById('ap-yield').value       = p.yield || '';
+  document.getElementById('ap-yield').value       = p.yield  || '';
+  document.getElementById('ap-growth').value      = p.growth || '';
   document.getElementById('ap-holding').value     = p.holdingPeriod || '';
+  document.getElementById('ap-lockin').value      = p.lockinPeriod  || '';
   document.getElementById('ap-rental').value      = p.rentalEstimate || '';
   document.getElementById('ap-desc').value        = p.description || '';
   document.getElementById('ap-emoji').value       = p.emoji || '🏢';
@@ -2322,6 +2409,10 @@ function editProperty(id) {
     document.getElementById('ap-unit-price-hint').textContent = '🔒 Financial fields locked once property is Open';
   }
 
+  _apImages = p.images || [];
+  renderImageGrid();
+  updateUploadArea();
+  initDocSlots(p.documents || []);
   updatePreview();
   updateStatusPreview();
   set('add-prop-title', 'Edit Property');
@@ -2332,8 +2423,8 @@ function editProperty(id) {
 }
 
 function resetPropertyForm() {
-  ['ap-name','ap-city','ap-state','ap-pin','ap-area','ap-valuation','ap-units',
-   'ap-unit-price','ap-min-units','ap-yield','ap-holding','ap-rental','ap-desc'].forEach(id => {
+  ['ap-name','ap-city','ap-district','ap-state','ap-pin','ap-area','ap-valuation','ap-units',
+   'ap-unit-price','ap-min-units','ap-yield','ap-growth','ap-holding','ap-lockin','ap-rental','ap-desc'].forEach(id => {
     const el = document.getElementById(id);
     if (el) { el.value = ''; el.readOnly = false; el.style.background = ''; }
   });
@@ -2342,6 +2433,10 @@ function resetPropertyForm() {
   document.getElementById('ap-emoji').value  = '🏢';
   document.getElementById('ap-unit-price-hint').textContent = 'Auto-calculated from valuation ÷ units';
   _editingPropertyId = null;
+  _apImages = [];
+  renderImageGrid();
+  updateUploadArea();
+  initDocSlots([]);
   updatePreview();
   updateStatusPreview();
 }
@@ -2370,22 +2465,26 @@ function onUnitPriceEdit() {
 function updatePreview() {
   const name      = document.getElementById('ap-name').value       || 'Property Name';
   const city      = document.getElementById('ap-city').value       || '—';
+  const district  = document.getElementById('ap-district').value;
   const state     = document.getElementById('ap-state').value;
   const type      = document.getElementById('ap-type').value       || '—';
   const unitPrice = parseFloat(document.getElementById('ap-unit-price').value) || 0;
   const minUnits  = parseFloat(document.getElementById('ap-min-units').value)  || 0;
   const yld       = document.getElementById('ap-yield').value;
+  const growth    = document.getElementById('ap-growth').value;
   const valuation = parseFloat(document.getElementById('ap-valuation').value) || 0;
   const emoji     = document.getElementById('ap-emoji').value       || '🏢';
 
   set('ap-preview-name',     name);
-  set('ap-preview-loc',      '📍 ' + [city, state].filter(Boolean).join(', '));
+  set('ap-preview-loc',      '📍 ' + [city, district, state].filter(Boolean).join(', '));
   set('ap-preview-type-loc', type + ' · ' + city);
   set('ap-preview-emoji',    emoji);
   set('ap-preview-price',    unitPrice ? fmt(unitPrice) : '—');
   set('ap-preview-min',      minUnits  ? minUnits + ' units' : '—');
-  set('ap-preview-yield',    yld       ? yld + '% p.a.' : '—');
+  set('ap-preview-yield',    yld    ? yld    + '% p.a.' : '—');
+  set('ap-preview-growth',   growth ? growth + '% p.a.' : '—');
   document.getElementById('ap-preview-emoji').textContent = emoji;
+  updatePreviewImage();
 
   // Total value formatted as Cr/L
   if (valuation >= 10000000) {
@@ -2415,6 +2514,7 @@ function updateStatusPreview() {
 function saveProperty() {
   const name     = document.getElementById('ap-name').value.trim();
   const city     = document.getElementById('ap-city').value.trim();
+  const district = document.getElementById('ap-district').value.trim();
   const type     = document.getElementById('ap-type').value;
   const valuation= parseFloat(document.getElementById('ap-valuation').value);
   const units    = parseInt(document.getElementById('ap-units').value);
@@ -2424,7 +2524,9 @@ function saveProperty() {
 
   // Validation
   if (!name)      { toast('⚠ Property name is required'); return; }
-  if (!city)      { toast('⚠ City is required'); return; }
+  if (!city)      { toast('⚠ Town/City/Village is required'); return; }
+  if (!district)  { toast('⚠ District is required'); return; }
+  if (!state)     { toast('⚠ State is required'); return; }
   if (!type)      { toast('⚠ Asset type is required'); return; }
   if (!valuation) { toast('⚠ Total valuation is required'); return; }
   if (!units)     { toast('⚠ Total units is required'); return; }
@@ -2433,9 +2535,13 @@ function saveProperty() {
 
   const state   = document.getElementById('ap-state').value.trim();
   const pin     = document.getElementById('ap-pin').value.trim();
-  const area    = document.getElementById('ap-area').value;
-  const yld     = parseFloat(document.getElementById('ap-yield').value) || null;
+  const location = [city, district, state].filter(Boolean).join(', ');
+  const area     = document.getElementById('ap-area').value;
+  const areaUnit = document.getElementById('ap-area-unit').value;
+  const yld     = parseFloat(document.getElementById('ap-yield').value)  || null;
+  const growth  = parseFloat(document.getElementById('ap-growth').value) || null;
   const holding = document.getElementById('ap-holding').value.trim();
+  const lockin  = document.getElementById('ap-lockin').value.trim();
   const rental  = parseFloat(document.getElementById('ap-rental').value) || null;
   const desc    = document.getElementById('ap-desc').value.trim();
   const emoji   = document.getElementById('ap-emoji').value || '🏢';
@@ -2449,11 +2555,13 @@ function saveProperty() {
   if (_editingPropertyId) {
     const p = db.properties.find(p => p.id === _editingPropertyId);
     if (p) {
-      p.name = name; p.location = [city, state].filter(Boolean).join(', ');
-      p.city = city; p.state = state; p.pin = pin; p.type = type; p.area = area;
+      p.name = name; p.location = location;
+      p.city = city; p.district = district; p.state = state; p.pin = pin; p.type = type; p.area = area; p.areaUnit = areaUnit;
       p.totalValue = valuation; p.totalUnits = units; p.unitPrice = unitPrice;
-      p.minUnits = minUnits; p.yield = yld; p.holdingPeriod = holding;
+      p.minUnits = minUnits; p.yield = yld; p.growth = growth; p.holdingPeriod = holding; p.lockinPeriod = lockin;
       p.rentalEstimate = rental; p.description = desc; p.emoji = emoji;
+      p.images = _apImages;
+      p.documents = _apDocs.map(d => ({ key:d.key, label:d.label, icon:d.icon, required:d.required, file:d.file }));
       p.status = status; p.gradient = gradients[type] || gradients.Commercial;
       if (status === 'Fully Subscribed' && p.subscribedUnits < p.totalUnits) p.status = 'Open';
     }
@@ -2462,10 +2570,12 @@ function saveProperty() {
   } else {
     const id = 'prop-' + Date.now();
     db.properties.push({
-      id, name, location: [city, state].filter(Boolean).join(', '),
-      city, state, pin, type, area, totalValue: valuation,
+      id, name, location,
+      city, district, state, pin, type, area, areaUnit, totalValue: valuation,
       totalUnits: units, unitPrice, minUnits, subscribedUnits: 0,
-      yield: yld, holdingPeriod: holding, rentalEstimate: rental,
+      yield: yld, growth, holdingPeriod: holding, lockinPeriod: lockin, rentalEstimate: rental,
+      images: _apImages,
+      documents: _apDocs.map(d => ({ key:d.key, label:d.label, icon:d.icon, required:d.required, file:d.file })),
       description: desc, emoji, status,
       gradient: gradients[type] || gradients.Commercial,
     });
@@ -2475,6 +2585,252 @@ function saveProperty() {
 
   renderAdminProperties();
   go('s-admin-properties');
+}
+
+// ─────────────────────────────────────────────
+// PROPERTY IMAGES  (Option 4 — canvas compress → base64 → localStorage)
+// ─────────────────────────────────────────────
+let _apImages = []; // [{ dataUrl, name, size, width, height }]
+let _dragSrcIdx = null;
+
+const MAX_IMAGES = 10;
+const COMPRESS_MAX_PX = 900;   // longest edge resized to this
+const COMPRESS_QUALITY = 0.78; // JPEG quality
+
+function handleImageFiles(files) {
+  const remaining = MAX_IMAGES - _apImages.length;
+  const toProcess = Array.from(files).slice(0, remaining);
+  if (!toProcess.length) { toast('⚠ Maximum ' + MAX_IMAGES + ' images allowed'); return; }
+  let done = 0;
+  toProcess.forEach(file => {
+    if (!file.type.startsWith('image/')) return;
+    compressImage(file, result => {
+      _apImages.push(result);
+      done++;
+      if (done === toProcess.length) {
+        renderImageGrid();
+        updateUploadArea();
+        toast('✓ ' + done + ' image' + (done > 1 ? 's' : '') + ' added');
+      }
+    });
+  });
+  // Reset input so same file can be re-added if removed
+  document.getElementById('ap-image-input').value = '';
+}
+
+function handleImageDrop(e) {
+  e.preventDefault();
+  document.getElementById('ap-image-upload-area').style.background = '';
+  handleImageFiles(e.dataTransfer.files);
+}
+
+function compressImage(file, callback) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      // Calculate target dimensions
+      let { width, height } = img;
+      if (width > COMPRESS_MAX_PX || height > COMPRESS_MAX_PX) {
+        const ratio = Math.min(COMPRESS_MAX_PX / width, COMPRESS_MAX_PX / height);
+        width  = Math.round(width  * ratio);
+        height = Math.round(height * ratio);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', COMPRESS_QUALITY);
+      const kb = Math.round(dataUrl.length * 0.75 / 1024);
+      callback({ dataUrl, name: file.name, size: kb < 1024 ? kb + ' KB' : (kb/1024).toFixed(1) + ' MB', width, height });
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderImageGrid() {
+  const grid = document.getElementById('ap-image-grid');
+  if (!grid) return;
+  if (!_apImages.length) { grid.innerHTML = ''; return; }
+
+  grid.innerHTML = _apImages.map((img, i) => `
+    <div class="prop-img-tile" draggable="true"
+         ondragstart="imageDragStart(${i})"
+         ondragover="event.preventDefault()"
+         ondrop="imageDrop(event,${i})"
+         ondragend="imageDragEnd()">
+      <img src="${img.dataUrl}" alt="${img.name}">
+      ${i === 0 ? '<div class="tile-badge">Cover</div>' : ''}
+      <div class="tile-overlay">
+        ${i > 0 ? `<button class="btn btn-sm btn-outline" style="background:rgba(255,255,255,0.9);font-size:11px;" onclick="moveImageFirst(${i})">Set cover</button>` : ''}
+        <button class="btn btn-sm btn-danger" style="font-size:11px;" onclick="removeImage(${i})">✕ Remove</button>
+      </div>
+      <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(15,30,56,0.6);padding:3px 7px;font-size:10px;color:rgba(255,255,255,0.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${img.name} · ${img.size}</div>
+    </div>`).join('');
+
+  // Also update the live preview card image
+  updatePreviewImage();
+}
+
+function updatePreviewImage() {
+  const previewImg = document.getElementById('ap-preview-img');
+  if (!previewImg) return;
+  if (_apImages.length) {
+    previewImg.style.backgroundImage = `url(${_apImages[0].dataUrl})`;
+    previewImg.style.backgroundSize = 'cover';
+    previewImg.style.backgroundPosition = 'center';
+    document.getElementById('ap-preview-emoji').style.display = 'none';
+  } else {
+    previewImg.style.backgroundImage = '';
+    const emojiEl = document.getElementById('ap-preview-emoji');
+    if (emojiEl) emojiEl.style.display = '';
+  }
+}
+
+function updateUploadArea() {
+  const area = document.getElementById('ap-image-upload-area');
+  if (!area) return;
+  const remaining = MAX_IMAGES - _apImages.length;
+  if (remaining <= 0) {
+    area.style.display = 'none';
+  } else {
+    area.style.display = '';
+    area.querySelector('div:nth-child(3)').textContent =
+      `JPG, PNG · Max 10MB per file · ${remaining} slot${remaining > 1 ? 's' : ''} remaining`;
+  }
+}
+
+function removeImage(i) {
+  _apImages.splice(i, 1);
+  renderImageGrid();
+  updateUploadArea();
+}
+
+function moveImageFirst(i) {
+  const [img] = _apImages.splice(i, 1);
+  _apImages.unshift(img);
+  renderImageGrid();
+  toast('✓ Cover image updated');
+}
+
+// Drag-to-reorder
+function imageDragStart(i) {
+  _dragSrcIdx = i;
+  setTimeout(() => {
+    const tiles = document.querySelectorAll('.prop-img-tile');
+    if (tiles[i]) tiles[i].classList.add('dragging');
+  }, 0);
+}
+
+function imageDrop(e, targetIdx) {
+  e.preventDefault();
+  if (_dragSrcIdx === null || _dragSrcIdx === targetIdx) return;
+  const [moved] = _apImages.splice(_dragSrcIdx, 1);
+  _apImages.splice(targetIdx, 0, moved);
+  _dragSrcIdx = null;
+  renderImageGrid();
+}
+
+function imageDragEnd() {
+  _dragSrcIdx = null;
+  document.querySelectorAll('.prop-img-tile').forEach(t => t.classList.remove('dragging'));
+}
+
+// ─────────────────────────────────────────────
+// PROPERTY DOCUMENTS
+// ─────────────────────────────────────────────
+const STANDARD_DOC_TYPES = [
+  { key:'due-diligence',  label:'Due Diligence Report',    icon:'🔍', required:true  },
+  { key:'title-report',   label:'Title Report & Legal Opinion', icon:'⚖️', required:true  },
+  { key:'brochure',       label:'Offering Brochure',       icon:'📋', required:false },
+  { key:'sale-agreement', label:'Sale / Lease Agreement',  icon:'📝', required:false },
+  { key:'floor-plan',     label:'Floor Plan',              icon:'📐', required:false },
+];
+
+// _apDocs holds the working document list while the form is open
+// Each entry: { key, label, icon, required, file: {name, size, date} | null }
+let _apDocs = [];
+
+function initDocSlots(existingDocs = []) {
+  // Start from standard slots, then merge any saved uploads
+  _apDocs = STANDARD_DOC_TYPES.map(t => ({
+    ...t,
+    file: existingDocs.find(d => d.key === t.key)?.file || null,
+  }));
+  // Re-append any custom docs that were saved
+  existingDocs.filter(d => !STANDARD_DOC_TYPES.find(t => t.key === d.key))
+    .forEach(d => _apDocs.push({ ...d }));
+  renderDocSlots();
+}
+
+function renderDocSlots() {
+  const container = document.getElementById('ap-doc-slots');
+  if (!container) return;
+  container.innerHTML = _apDocs.map((doc, i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:${doc.file ? 'var(--green-bg)' : 'var(--surface-2)'};border-radius:var(--radius-sm);border:1px solid ${doc.file ? 'rgba(45,125,90,0.2)' : 'var(--border)'};">
+      <span style="font-size:18px;flex-shrink:0;">${doc.icon}</span>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:500;color:var(--navy);">
+          ${doc.label}
+          ${doc.required ? '<span style="color:var(--red);margin-left:4px;font-size:11px;">Required</span>' : ''}
+        </div>
+        ${doc.file
+          ? `<div style="font-size:11.5px;color:var(--green);">✓ ${doc.file.name} <span style="color:var(--slate-light);">(${doc.file.size}) · ${doc.file.date}</span></div>`
+          : `<div style="font-size:11.5px;color:var(--slate-light);">No file uploaded</div>`
+        }
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        <button class="btn btn-sm ${doc.file ? 'btn-outline' : 'btn-gold'}" onclick="simulateUpload(${i})">${doc.file ? '↺ Replace' : '↑ Upload'}</button>
+        ${doc.file ? `<button class="btn btn-sm btn-danger" onclick="removeDoc(${i})">✕</button>` : ''}
+        ${!STANDARD_DOC_TYPES.find(t => t.key === doc.key) ? `<button class="btn btn-sm btn-danger" onclick="removeDocSlot(${i})" title="Remove slot">🗑</button>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function simulateUpload(i) {
+  // Simulate a file picker — in production this triggers <input type="file">
+  const doc = _apDocs[i];
+  const fakeFiles = {
+    'due-diligence':  'Due_Diligence_Report_2026.pdf',
+    'title-report':   'Title_Report_Legal_Opinion.pdf',
+    'brochure':       'Property_Brochure_v2.pdf',
+    'sale-agreement': 'Lease_Agreement_Signed.pdf',
+    'floor-plan':     'Floor_Plan_AllFloors.pdf',
+  };
+  const name = fakeFiles[doc.key] || (doc.label.replace(/\s+/g,'_') + '.pdf');
+  const sizes = ['1.2 MB','2.4 MB','840 KB','3.1 MB','1.8 MB'];
+  _apDocs[i].file = {
+    name,
+    size: sizes[i % sizes.length],
+    date: new Date().toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}),
+  };
+  renderDocSlots();
+  toast('📄 ' + name + ' uploaded successfully');
+}
+
+function removeDoc(i) {
+  _apDocs[i].file = null;
+  renderDocSlots();
+}
+
+function removeDocSlot(i) {
+  _apDocs.splice(i, 1);
+  renderDocSlots();
+}
+
+function addCustomDocSlot() {
+  const nameEl = document.getElementById('ap-doc-custom-name');
+  const label = nameEl.value.trim();
+  if (!label) { toast('⚠ Enter a document name first'); return; }
+  _apDocs.push({
+    key: 'custom-' + Date.now(),
+    label,
+    icon: '📄',
+    required: false,
+    file: null,
+  });
+  nameEl.value = '';
+  renderDocSlots();
 }
 
 // ─────────────────────────────────────────────
